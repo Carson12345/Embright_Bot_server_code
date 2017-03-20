@@ -136,7 +136,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
             next();
         },
         function (session, args, next) {
-            builder.Prompts.text(session, 'Could you also describe a bit about yourself and your needs? For example are you a beginner or advanced learner to the topic? You can also tell me about your education background/preferences in learning, thank you!');
+            builder.Prompts.text(session, 'Could you also describe a bit about yourself? For example are you a beginner or advanced learner to the topic? You can also tell me about your education background/preferences in learning, thank you!');
         },
         function (session, results, next) {
             var learner_des = results.response;
