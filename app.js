@@ -14,7 +14,6 @@ var Store = require('./store');
 var spellService = require('./spell-service');
 
 
-
 var users = require('./users');
 
 
@@ -97,18 +96,38 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
         function (session, args, next) {
             var learner = builder.EntityRecognizer.findEntity(args.entities, 'learner');
             session.send('Hi '+ session.message.address.user.name +' this is Satya, I am your AI mentor, how can I help you?', session.message.text);
-            console.log(session.message.address);
+            console.log(session.message.text);
                 //sample request
-                // var myJSONObject = {UserID: 1, PlanTitle: 'Embright'};
-                // request({
-                //     url: "https://b26ae2d3.ngrok.io/api/register",
-                //     method: "POST",
-                //     json: true,   // <--Very important!!!
-                //     body: myJSONObject
-                // }, function (error, response, body){
-                //     console.log(response);
-                // });
+                var myJSONObject = 
+                {
+                    "documents": [
+                        {
+                        "language": "en",
+                        "id": "123345",
+                        "text": session.message.text
+                        }
+                    ]
+                };
+                request({
+                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+                    method: "POST",
+                    headers: {
+                    "content-type": "application/json",
+                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
+                    },
+                    json: true,   // <--Very important!!!
+                    body: myJSONObject
+                    
+                }, 
+                function(err, res, body) {
+                    var myans = body["documents"][0]["keyPhrases"][0];
+                    console.log(body["documents"]);
+                    console.log(myans);
+                    console.log(body["documents"][0]["keyPhrases"].length);
+  // `body` is a js object if request was successful
+                });
                 //end of sample request
+
                 
   }
     ])
@@ -129,14 +148,76 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
         function (session, args, next) {
             topic_to_learn_ID = builder.EntityRecognizer.findEntity(args.entities, 'topic_to_learn');
             builder.Prompts.text(session, 'Sure, can you please also tell me about your goals or anything you want to achieve after learning about this topic?');
+            //Text analytics request
+                var myJSONObject = 
+                {
+                    "documents": [
+                        {
+                        "language": "en",
+                        "id": "123345",
+                        "text": topic_to_learn_ID
+                        }
+                    ]
+                };
+                request({
+                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+                    method: "POST",
+                    headers: {
+                    "content-type": "application/json",
+                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
+                    },
+                    json: true,   // <--Very important!!!
+                    body: myJSONObject
+                    
+                }, 
+                function(err, res, body) {
+                    var myans = JSON.stringify(body);
+                    console.log(myans);
+                // `body` is a js object if request was successful
+                });
+                //end of request
         },
         function (session, results, next) {
             var learning_goals = results.response;
             learning_goals_ID = learning_goals;
+            //sample request
+                var myJSONObject = 
+                {
+                    "documents": [
+                        {
+                        "language": "en",
+                        "id": session.message.address.user.id,
+                        "text": learning_goals_ID
+                        }
+                    ]
+                };
+                request({
+                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+                    method: "POST",
+                    headers: {
+                    "content-type": "application/json",
+                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
+                    },
+                    json: true,   // <--Very important!!!
+                    body: myJSONObject
+                    
+                }, 
+                function(err, res, body) {
+                    var myans = body["documents"][0]["keyPhrases"];
+                    console.log(body["documents"]);
+                    console.log("Keywords: "+myans);
+                    console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length);
+                    for(var i = 0; i < body["documents"][0]["keyPhrases"].length; i++) 
+                    {
+                        console.log(myans[i]);
+                    }
+                 // `body` is a js object if request was successful
+                });
+                //end of sample request
             next();
         },
         function (session, args, next) {
-            builder.Prompts.text(session, 'Could you also describe a bit about yourself? For example are you a beginner or advanced learner to the topic? You can also tell me about your education background/preferences in learning, thank you!');
+            builder.Prompts.text(session, 'Could you also describe a bit about yourself and your needs? For example are you a beginner or advanced learner to the topic? You can also tell me about your education background/preferences in learning, thank you!');
         },
         function (session, results, next) {
             var learner_des = results.response;
@@ -247,3 +328,36 @@ function EnrollPlan(PlanID,UserID) {
             });
         });
     }
+
+
+
+//                     //sample request
+//                 var myJSONObject = 
+//                 {
+//                     "documents": [
+//                         {
+//                         "language": "en",
+//                         "id": "123345",
+//                         "text": session.message.text
+//                         }
+//                     ]
+//                 };
+//                 request({
+//                     url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+//                     method: "POST",
+//                     headers: {
+//                     "content-type": "application/json",
+//                     "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
+//                     },
+//                     json: true,   // <--Very important!!!
+//                     body: myJSONObject
+                    
+//                 }, 
+//                 function(err, res, body) {
+//                     var myans = body["documents"][0]["keyPhrases"][0];
+//                     console.log(body["documents"]);
+//                     console.log(myans);
+//                     console.log(body["documents"][0]["keyPhrases"].length);
+//   // `body` is a js object if request was successful
+//                 });
+//                 //end of sample request
