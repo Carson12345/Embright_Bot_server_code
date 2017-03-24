@@ -1,11 +1,11 @@
 {
-  "name": "Embright_bot",
+  "name": "botbuilder-sample-luis",
   "version": "1.0.0",
-  "description": "Bot module of Embright - process human learning request like a real teacher and serve like one",
+  "description": "Bot Builder Sample - LUIS",
   "scripts": {
     "start": "node app.js"
   },
-  "author": "Team Embright",
+  "author": "Microsoft Corp.",
   "license": "MIT",
   "keywords": [
     "botbuilder",
@@ -18,12 +18,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Carson12345/embrightbotserver.git"
+    "url": "https://github.com/Microsoft/BotBuilder-Samples.git"
   },
   "dependencies": {
     "bluebird": "^3.4.7",
     "body-parser": "^1.17.1",
     "botbuilder": "^3.6.0",
+    "cognitive-services": "^0.1.0",
     "dotenv-extended": "^1.0.4",
     "express": "^4.15.2",
     "mssql": "^3.3.0",

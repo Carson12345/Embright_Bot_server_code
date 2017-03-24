@@ -1,4 +1,4 @@
-module.exports = {
+﻿module.exports = {
 
     InsertNewfbRecord: function (fb_id, fb_email, fb_displayname, fb_gender, fb_propic) {
         var sql = require('mssql');
@@ -6,9 +6,10 @@ module.exports = {
         sql.connect(config).then(function () {
             console.log('Attempting to Insert records...');
             new sql.Request().query
-            ("INSERT INTO dbo.FBuser (fb_id, fb_email, fb_displayname, fb_gender, fb_profilepic) VALUES ('" + "fb_id" + "', '" + "fb_email" + "', '" + "fb_displayname" + "', '" + "fb_gender" + "', '" + "fb_propic" + "');");
+            ("INSERT INTO dbo.FBuser (fb_id, fb_email, fb_displayname, fb_gender, fb_profilepic) VALUES ('" + fb_id + "', '" + fb_email + "', '" + fb_displayname + "', '" + fb_gender + "', '" + fb_propic + "');");
+
             console.log("Added one new record");
-            console.log("The new username is fb_displayname");
+            console.log("The new username is " + fb_displayname);
         });
     },
 
@@ -54,7 +55,7 @@ module.exports = {
             new sql.Request().query
             ("INSERT INTO dbo.LocalUser (Username, Password, DisplayName, Email, Gender) VALUES ('" + User.Username + "', '" + User.Password + "', '" + User.DisplayName + "', '" + User.Email + "', '" + User.Gender + "');");
             console.log("Added one new record");
-            console.log("The new username is " + User.DisplayName);
+            console.log("The new User is " + User.DisplayName);
         });
     },
 
@@ -88,6 +89,7 @@ module.exports = {
                         callback(User);
                     } else {
                         console.log("The user is existed.");
+                        callback();
                     }
                 }).catch(function (err) {
                     //When errors come
@@ -119,7 +121,7 @@ module.exports = {
                 console.log(err);
                 return;
             } 
-            req.query("SELECT * FROM dbo.LocalUser WHERE Username = '" + User.username + "' AND Password = '" + User.password + "';", function (err, recordset) {
+            req.query("SELECT * FROM dbo.LocalUser WHERE Username = '" + User.Username + "' AND Password = '" + User.Password + "';", function (err, recordset) {
                 if (err) {
                     console.log(err);
                 } else if (!isEmptyObject(recordset)) {
@@ -133,4 +135,4 @@ module.exports = {
             });
         });
     },
-}
+};

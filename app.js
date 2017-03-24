@@ -1,20 +1,21 @@
+//load needed modules
 var connect = require('connect');
 var http = require('http');
 var net = require('net');
 var app = connect();
 // require request-ip and register it as middleware
 var requestIp = require('request-ip');
-
 var request = require('request');
-
-// Load all essential modules for manipulating fbuser system
 var builder = require('botbuilder');
 var restify = require('restify');
 var Store = require('./store');
 var spellService = require('./spell-service');
+var mssql = require('mssql');
+var updatecount = 0;
 
 
 var users = require('./users');
+var plans = require('./plans');
 
 
 // This loads the environment variables from the .env file
@@ -35,29 +36,7 @@ var connector = new builder.ChatConnector({
 });
 var bot = new builder.UniversalBot(connector);
 server.use(restify.bodyParser());
-
 server.post('/api/messages', connector.listen());
-
-// 
-// server.post('/api/register', function (req, res) {
-//     global_id = req.params.UserID;
-// });
-//
-
-
-// server.post('/api/messages', function(req, res, next){
-//  console.log(req.params);
-//   var ip = req.headers['x-forwarded-for'] || 
-//      req.connection.remoteAddress || 
-//      req.socket.remoteAddress ||
-//      req.connection.socket.remoteAddress;
-//      console.log(ip);
-//      users.InsertNewRecord;
-//  res.send(200);
-//  res.end();
-// })  ;
-
-
 
 
 
@@ -84,6 +63,16 @@ bot.on('conversationUpdate', message => {
                 bot.send(reply);
                 console.log(message.address);
                 console.log("The userid is: " + message.address.user.id);
+
+
+
+
+               
+
+
+
+
+                
             }
         });
     }
@@ -124,9 +113,32 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     console.log(body["documents"]);
                     console.log(myans);
                     console.log(body["documents"][0]["keyPhrases"].length);
-  // `body` is a js object if request was successful
+
                 });
                 //end of sample request
+
+                var chkuserid = Number(session.message.address.user.id);
+                var counter = 0;
+                console.log(chkuserid);
+                plans.CheckEnrolledPlanCompletion(chkuserid, function (fetchedcompletionrecord) {
+                    for (var prop in fetchedcompletionrecord) {
+                        console.log(fetchedcompletionrecord[prop].PlanTitle);
+                        
+                        if (fetchedcompletionrecord[prop].Completed == 1) {
+                                counter = counter + 1;
+                        }
+                        if (counter > 1) {
+                            const reply = new builder.Message()
+                                .address(message.address)
+                                .text('Hey you got two updates: Resources Updates(2) \n Learning updates(1)');
+                            bot.send(reply); 
+                        }
+
+                    } 
+                });
+
+                
+                
 
                 
   }
@@ -169,7 +181,6 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     bot.send(reply);
                     //create cards
                     
-
                     
                 // `body` is a js object if request was successful
                 });
@@ -182,15 +193,17 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('get_learning_plan', [
 
         function (session, args, next) {
-            topic_to_learn_ID = builder.EntityRecognizer.findEntity(args.entities, 'topic_to_learn');
+            //ID is not id, it means it is a unique record
+            topic_to_learn = builder.EntityRecognizer.findEntity(args.entities, 'topic_to_learn');
+            topic_to_learn_ID = topic_to_learn.entity;
             builder.Prompts.text(session, 'Sure, can you please also tell me about your goals or anything you want to achieve after learning about this topic?');
-            //Text analytics request
+            //sample request
                 var myJSONObject = 
                 {
                     "documents": [
                         {
                         "language": "en",
-                        "id": "123345",
+                        "id": session.message.address.user.id,
                         "text": topic_to_learn_ID
                         }
                     ]
@@ -207,11 +220,19 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     
                 }, 
                 function(err, res, body) {
-                    var myans = JSON.stringify(body);
-                    console.log(myans);
-                // `body` is a js object if request was successful
+                    console.log(body);
+                    var keyword = body["documents"][0]["keyPhrases"];
+                    console.log(body["documents"]);
+                    console.log("Keywords: "+keyword);
+                    console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length);
+                    topic_key = keyword[0];
+                    for(var i = 0; i < body["documents"][0]["keyPhrases"].length; i++) 
+                    {
+                        console.log(keyword[i]);
+                    }
+                 // `body` is a js object if request was successful
                 });
-                //end of request
+                //end of sample request
         },
         function (session, results, next) {
             var learning_goals = results.response;
@@ -239,13 +260,14 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     
                 }, 
                 function(err, res, body) {
-                    var myans = body["documents"][0]["keyPhrases"];
+                    var keyword = body["documents"][0]["keyPhrases"];
                     console.log(body["documents"]);
-                    console.log("Keywords: "+myans);
+                    console.log("Keywords: "+keyword);
                     console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length);
+                    goal_key = keyword[0];
                     for(var i = 0; i < body["documents"][0]["keyPhrases"].length; i++) 
                     {
-                        console.log(myans[i]);
+                        console.log(keyword[i]);
                     }
                  // `body` is a js object if request was successful
                 });
@@ -258,37 +280,141 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
         function (session, results, next) {
             var learner_des = results.response;
             learner_des_ID = learner_des;
-            session.send('Got it! let me do some research and analysis...', session.message.text);
+            //sample request
+                var myJSONObject = 
+                {
+                    "documents": [
+                        {
+                        "language": "en",
+                        "id": session.message.address.user.id,
+                        "text": learner_des_ID
+                        }
+                    ]
+                };
+ 
+                request({
+                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+                    method: "POST",
+                    headers: {
+                    "content-type": "application/json",
+                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
+                    },
+                    json: true,   // <--Very important!!!
+                    body: myJSONObject
+                    
+                }, 
+                function(err, res, body) {
+                    var keyword = body["documents"][0]["keyPhrases"];
+                    console.log(body["documents"]);
+                    console.log("Keywords: "+keyword);
+                    console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length);
+                    des_key = keyword[0];
+                    for(var i = 0; i < body["documents"][0]["keyPhrases"].length; i++) 
+                    {
+                        console.log(keyword[i]);
+                    }
+                 // `body` is a js object if request was successful
+                });
+                //end of sample request
+            
             next();
         },
         function (session, args, next) {
-            session.send('Here you are:) These are the topics related to ' + topic_to_learn_ID.entity +' for you to start with.', session.message.text);
+            var address = session.message.address;
+            plans.LoadAllPlanTopics(topic_key, function (fetchedtopicssbytopickey) {
+                for (var prop in fetchedtopicssbytopickey) {
+                    console.log("The relevant topics on database are: " + fetchedtopicssbytopickey[prop].PlanTopic);
+                    var cards = new Array();
+                    cards.push(topic_create(fetchedtopicssbytopickey, prop));
+                    const reply = new builder.Message()
+                        .address(address)
+                        .text('These are the relevant topics related to ' + topic_to_learn_ID.entity +' for you to start with.')
+                        .attachmentLayout(builder.AttachmentLayout.carousel)
+                        .attachments(cards);
+                    bot.send(reply);
+                    
+
+                }
+            });
             // create reply with Carousel AttachmentLayout
-            var cards = getCardsAttachments();
-            var reply = new builder.Message(session)
-            .attachmentLayout(builder.AttachmentLayout.carousel)
-            .attachments(cards);
-            session.send(reply);
             builder.Prompts.text(session, 'please choose the one you are most interested in!');
         },
         function (session, results,next) {
+            var address = session.message.address;
+            
             var topic_to_learn = results.response;
             topic_to_learn_ID = topic_to_learn;
             session.send('Nice choice! I am formulating some learning plans for you!', session.message.text);
-            var cards = getCardsAttachments();
-            var reply = new builder.Message(session)
-            .attachmentLayout(builder.AttachmentLayout.carousel)
-            .attachments(cards);
-            session.send(reply);
+            //Find a right plan
+            plans.LoadSpecificPlanByPlanTopic(topic_to_learn_ID, function (fetchedplansbytopic) {
+                plans.LoadSpecificPlanByLearningOutcomes(goal_key, function (fetchedplansbygoal) {
+                    console.log(fetchedplansbytopic[0].PlanTitle);
+                    console.log("XXXXXXXXX");
+                    //createcards
+                    var cards = new Array();
+                    //for (i = 0; i < 2; i++) { 
+            
+                    cards.push(topic_card(fetchedplansbytopic));
+                    
+                    // create reply with Carousel AttachmentLayout
+                    
+                    const reply = new builder.Message()
+                        .address(address)
+                        .text('Here are my suggested plans')
+                        .attachmentLayout(builder.AttachmentLayout.carousel)
+                        .attachments(cards);
+                    bot.send(reply);
+                });
+            });
+            //create cards
             builder.Prompts.text(session, 'Try one of these learning plan!');
         },
          function (session, results,next) {
+            var userid = session.message.address.user.id;
             var plan_chosen = results.response;
             plan_chosen_ID = plan_chosen;
-            session.send('Got it! The learning plan has been added to your profile! Start with the materials and opportunities in it, I will keep track of your progress and guide you!:)', session.message.text);
+            plans.EnrollPlan(results.response , userid);
+            session.send('Got it! The learning plan has been added to your profile! \n Start with the materials and opportunities in it, I will keep track of your progress and guide you!:)', session.message.text);
+         
          }
-        
+                
     ])
+
+
+
+
+//Check updates resources
+    .matches('update_res', [
+        function (session, args) 
+            {
+                var cards = createresCard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .text('These useful learning resources are going to expire! \n Do not miss them!')
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+            }
+    ])
+
+//Check updates learn
+    .matches('update_learning', [
+        function (session, args, next) 
+            {
+                var cards = createlearnCard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .text('As you have finished one learning plan for your saved goals. These are the more advanced topic for you to explore further')
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+
+            }
+    ])
+
+
+
+
 
     .onDefault((session) => {
         
@@ -327,81 +453,84 @@ function constructwikiCard(page) {
 
 
 //topiccard
-// function topic_card() {
-//     return new builder.HeroCard()
-//         .title(hotel.name)
-//         .subtitle('%d stars. %d reviews. From $%d per night.', hotel.rating, hotel.numberOfReviews, hotel.priceStarting)
-//         .images([new builder.CardImage().url(hotel.image)])
-//         .buttons([
-//             new builder.CardAction()
-//                 .title('More details')
-//                 .type('openUrl')
-//                 .value('https://www.bing.com/search?q=hotels+in+' + encodeURIComponent(hotel.location))
-//         ]);
-// }
+function topic_card(planobj) {
+    return new builder.HeroCard()
+        .title(planobj[0].PlanTitle)
+        .subtitle(planobj[0].PlanDetails)
+        //.images([new builder.CardImage().url()])
+        .buttons([
+            new builder.CardAction.postBack()
+                                    .title('Add this to my profile')
+                                    .type('postBack')
+                                    .value(planobj[0].PlanID)
+        ]);
+}
 
-//cards
-function getCardsAttachments(session) {
-    return [
-
-        new builder.ThumbnailCard(session)
-            .title('Topic1')
-            .subtitle('Description of topic1')
-            .text('Even more description of topic1')
-            .images([
-                builder.CardImage.create(session, 'https://azurecomcdn.azureedge.net/cvt-68b530dac63f0ccae8466a2610289af04bdc67ee0bfbc2d5e526b8efd10af05a/images/page/services/cognitive-services/cognitive-services.png')
-            ])
-            .buttons([
-                builder.CardAction.openUrl(session, 'https://azure.microsoft.com/en-us/services/cognitive-services/', 'Start with this')
-            ]),
-            
-        new builder.ThumbnailCard(session)
-            .title('Topic1')
-            .subtitle('Description of topic1')
-            .text('Even more description of topic1')
-            .images([
-                builder.CardImage.create(session, 'https://azurecomcdn.azureedge.net/cvt-68b530dac63f0ccae8466a2610289af04bdc67ee0bfbc2d5e526b8efd10af05a/images/page/services/cognitive-services/cognitive-services.png')
-            ])
-            .buttons([
-                builder.CardAction.openUrl(session, 'https://eebbc576.ngrok.io', title = 'Log in')
-            ]),
-
-        new builder.ThumbnailCard(session)
-            .title('Topic1')
-            .subtitle('Description of topic1')
-            .text('Even more description of topic1')
-            .images([
-                builder.CardImage.create(session, 'https://azurecomcdn.azureedge.net/cvt-68b530dac63f0ccae8466a2610289af04bdc67ee0bfbc2d5e526b8efd10af05a/images/page/services/cognitive-services/cognitive-services.png')
-            ])
-            .buttons([
-                builder.CardAction.imBack(session, msg = 'topic3',title = 'Start with this')
-            ])
-    ];
+//topic cards
+function topic_create(topicobj,prop) {
+    return new builder.HeroCard()
+        .title(topicobj[prop].PlanTopic)
+        //.images([new builder.CardImage().url()])
+        .buttons([
+            new builder.CardAction.postBack()
+                                    .title('Start with this')
+                                    .type('imBack')
+                                    .value(topicobj[prop].PlanTopic)
+        ]);
 }
 
 
 
-function EnrollPlan(PlanID,UserID) {
-        var sql = require('mssql');
-        var config = require('./configuration/sqlconfig');
-        var conn = new sql.Connection(config);
-        var req = new sql.Request(conn);
-        conn.connect(function (err) {
-            if (err) {
-                console.log(err);
-                return;
-            } 
-            console.log('Attempting to Insert new plan enrollment record...');
-            req.query("INSERT INTO dbo.PlanEnrollment (PlanID, UserID) VALUES ('" + PlanID + "', '" + UserID + "');", function (err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Added one new enrollment record");
-                }
-                conn.close();
-            });
-        });
-    }
+//cards
+function createlearnCard(session) {
+    return [
+        new builder.HeroCard(session)
+        .title('Cinematography')
+        .buttons([
+            builder.CardAction.imBack(session, 'Directing', 'Learn this topic')
+        ]),
+
+        new builder.HeroCard(session)
+        .title('Directing')
+        .buttons([
+            builder.CardAction.imBack(session, 'Directing', 'Learn this topic')
+        ]),
+
+        new builder.HeroCard(session)
+        .title('Production Design')
+        .buttons([
+            builder.CardAction.imBack(session, 'Directing', 'Learn this topic')
+        ])
+    ]
+}
+//opportunities update
+
+function createresCard(session) {
+    return [ 
+        new builder.HeroCard(session)
+        .title('Free Course: Visual Design and Motion Graphics')
+        .subtitle('Application Deadline: 26/3/2017')
+        .text('The last 3 free course of General Assembly Hong Kong, this one is especially designers and directors to be to learn about the concepts in visual design, which will help you to develop in many field......')
+        .images([
+            builder.CardImage.create(session, 'https://ga-shop-production-herokuapp-com.global.ssl.fastly.net/assets/images/logo_1200_by_627_1QIVL.jpg')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'https://generalassemb.ly/education/visual-design', 'Apply Now')
+        ]),
+
+        new builder.HeroCard(session)
+        .title('第四屆全港中學微電影創作大賽')
+        .subtitle('2017年3月28日截止')
+        .text('以微電影手法拍攝一個以燦爛人生作主題, 有了正能量我們便可以積極面對任何困難, 勇敢迎接每項挑戰, 通過幫助別人令自己人生更燦爛......')
+        .images([
+            builder.CardImage.create(session, 'http://www.ymca.org.hk/sites/ymca_main/files/default_images/ymca_banner_0.jpg')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'http://www.ymca.org.hk/zh-hant/minimovie2016/', 'Apply Now')
+        ])   
+    ]
+}
+
 
 
 

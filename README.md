@@ -218,4 +218,3 @@ To get more information about how to get started in Bot Builder for Node and LUI
 > 
 > On the other hand, they are not supported and the sample won't work as expected in the following channel:
 > - SMS
-# embrightbotserver
