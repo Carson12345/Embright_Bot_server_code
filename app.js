@@ -117,25 +117,25 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                 });
                 //end of sample request
 
-                var chkuserid = Number(session.message.address.user.id);
-                var counter = 0;
-                console.log(chkuserid);
-                plans.CheckEnrolledPlanCompletion(chkuserid, function (fetchedcompletionrecord) {
-                    for (var prop in fetchedcompletionrecord) {
-                        console.log(fetchedcompletionrecord[prop].PlanTitle);
+                // var chkuserid = Number(session.message.address.user.id);
+                // var counter = 0;
+                // console.log(chkuserid);
+                // plans.CheckEnrolledPlanCompletion(chkuserid, function (fetchedcompletionrecord) {
+                //     for (var prop in fetchedcompletionrecord) {
+                //         console.log(fetchedcompletionrecord[prop].PlanTitle);
                         
-                        if (fetchedcompletionrecord[prop].Completed == 1) {
-                                counter = counter + 1;
-                        }
-                        if (counter > 1) {
-                            const reply = new builder.Message()
-                                .address(message.address)
-                                .text('Hey you got two updates: Resources Updates(2) \n Learning updates(1)');
-                            bot.send(reply); 
-                        }
+                //         if (fetchedcompletionrecord[prop].Completed == 1) {
+                //                 counter = counter + 1;
+                //         }
+                //         if (counter > 1) {
+                //             const reply = new builder.Message()
+                //                 .address(message.address)
+                //                 .text('Hey you got two updates: Resources Updates(2) \n Learning updates(1)');
+                //             bot.send(reply); 
+                //         }
 
-                    } 
-                });
+                //     } 
+                // });
 
                 
                 
@@ -183,7 +183,8 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     
                     
                 // `body` is a js object if request was successful
-                });
+            });
+            session.send('Hey you got two updates: Resources Updates(2) \n Learning updates(1)!', session.message.text);
                 //end of request
 
             }
