@@ -672,8 +672,8 @@ function greetingcard(session) {
         ]),
 
         new builder.HeroCard(session)
-        .title('Get events/workshop recommendation')
-        .subtitle('Get recommendation of events/talks/workshops/conferences according to your requirement')
+        .title('Get events recommendation')
+        .subtitle('Get recommendation of events/talks/courses/workshops/conferences according to your requirement')
         .buttons([
             builder.CardAction.imBack(session, 'Get events/workshop recommendation', 'Click here to start')
         ]),
