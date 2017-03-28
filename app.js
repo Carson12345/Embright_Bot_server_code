@@ -502,7 +502,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                                             if (counter == fetchedplan2.length) {
                                             const reply = new builder.Message()
                                                                         .address(session.message.address)
-                                                                        .text('These projects match what you just told me!')
+                                                                        .text('These projects match what you just told me! (Arranged by relevance)')
                                                                         .attachmentLayout(builder.AttachmentLayout.carousel)
                                                                         .attachments(cards);
                                             bot.send(reply);
