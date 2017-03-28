@@ -400,7 +400,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
         function (session, args, next) 
             {
 
-            builder.Prompts.text(session, 'Got it, can you describe what you are looking for? (e.g. I am working on a project about .../I want to find someone doing .../I want to learn how to ...');
+            builder.Prompts.text(session, 'Got it, can you describe what you are looking for? (e.g. I am working on a project about ...... / I want to find someone doing ...... / I want to learn how to ......)');
             },
             function (session, results, next) {
             var learner_des = results.response;
@@ -670,7 +670,7 @@ function greetingcard(session) {
         .title('Find Projects')
         .subtitle('Want to find projects similar to what you are working on? Want to learn specific technical skills? Get inspired and learn from the projects of others!')
         .buttons([
-            builder.CardAction.imBack(session, 'I need some inspiration, find me some projects', 'Click here to start')
+            builder.CardAction.imBack(session, 'I need inspiration and ideas, find me some projects', 'Click here to start')
         ]),
 
         new builder.HeroCard(session)
