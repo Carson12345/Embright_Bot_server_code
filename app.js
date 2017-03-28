@@ -364,7 +364,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 
 //Check updates resources
     .matches('update_res', [
-        function (session, args) 
+        function (session, args, next) 
             {
                 var cards = eventcard(session);
                 // attach the card to the reply message
@@ -383,6 +383,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
             //     console.log(fetchedplan);
 
             // });
+        next();
 
         },
          function (session, args, next) {
