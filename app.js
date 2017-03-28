@@ -56,11 +56,12 @@ bot.on('conversationUpdate', message => {
             if (identity.id === message.address.bot.id) {
                 const reply = new builder.Message()
                     .address(message.address)
-                    .text('Hi this is Muse, ready to get the inspiration and learning references you need. How can I help you?');
+                    .text('Welcome back! You have some new event and job updates. Say Hi to activate Muse.');
                     
                 bot.send(reply);
                 console.log(message.address);
                 console.log("The userid is: " + message.address.user.id);
+                
 
                 
             }
@@ -79,7 +80,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                 var cards = greetingcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('Nice to meet you, '+ session.message.address.user.name +'. Tell me what you are working on or what you want to find, I will get you the inspiration you need.')
+                    .text('Hi, '+ session.message.address.user.name +'! I am ready to get the inspiration and learning references you need. How can I help you?')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
@@ -390,7 +391,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
         function (session, args, next) 
             {
 
-            builder.Prompts.text(session, 'What are you looking for? Please provide me with more details and requirements in your own words');
+            builder.Prompts.text(session, 'Got it, can you describe what you are looking for? (e.g. I want to find someone doing xxx/I want to learn how to xxx');
             },
             function (session, results, next) {
             var learner_des = results.response;
