@@ -515,8 +515,19 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                 });
                 //end of sample request
             
+            
+            builder.Prompts.text(session, 'Click one of them then I will help you put it in your collection!');
             next();
         },
+         function (session, results,next) {
+            var userid = session.message.address.user.id;
+            var plan_chosen = results.response;
+            plan_chosen_ID = plan_chosen;
+            plans.EnrollPlan(results.response , userid);
+            session.send('Got it! This project has been saved to your collection. Make the best use of it!'), session.message.text;
+         
+         }
+        
     ])
 
 
