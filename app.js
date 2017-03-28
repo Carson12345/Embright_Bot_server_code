@@ -369,7 +369,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                 var cards = eventcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('These useful learning resources are going to expire! \n Do not miss them!')
+                    .text('[UPDATES] I think you will be interested in these events!')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
@@ -387,11 +387,12 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 
         },
          function (session, args, next) {
-            builder.Prompts.text(session, 'I can also find events according to your requirements. Please tell me what do you want to find.');
+            builder.Prompts.text(session, 'I can also find events according to your requirements. Any specific event you want to find?');
         },
         function (session, results, next) {
             var learner_des = results.response;
             learner_des_ID = learner_des;
+            session.send('Got it! Please note that we will also record your search data for more accurate recommendation next time', session.message.text);
         }        
 ])
 
