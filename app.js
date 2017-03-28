@@ -373,6 +373,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
+                
             // plans.LoadAllPlans(function (fetchedplan) {
             //     var fetchedplan = fetchedplan; 
             //     console.log(fetchedplan);
@@ -383,6 +384,13 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 
             // });
 
+        },
+         function (session, args, next) {
+            builder.Prompts.text(session, 'I can also find events according to your requirements. Please tell me what do you want to find.');
+        },
+        function (session, results, next) {
+            var learner_des = results.response;
+            learner_des_ID = learner_des;
         }        
 ])
 
