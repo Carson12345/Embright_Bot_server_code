@@ -516,7 +516,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                 //end of sample request
             
             
-            builder.Prompts.text(session, 'Click one of them then I will help you put it in your collection!');
+            builder.Prompts.text(session, 'Click one of the following then I will add it into your collection!');
         },
          function (session, results,next) {
             var userid = session.message.address.user.id;
