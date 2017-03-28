@@ -366,22 +366,22 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('update_res', [
         function (session, args) 
             {
-                // var cards = createresCard(session);
-                // // attach the card to the reply message
-                // var reply = new builder.Message(session)
-                //     .text('These useful learning resources are going to expire! \n Do not miss them!')
-                //     .attachmentLayout(builder.AttachmentLayout.carousel)
-                //     .attachments(cards);
-                // session.send(reply);
-            plans.LoadAllPlans(function (fetchedplan) {
-                var fetchedplan = fetchedplan;
-                console.log(fetchedplan);
-                console.log(fetchedplan[0]['PlanTitle']);
-                console.log(fetchedplan[0]['PlanTitle']);
-                fetchedplan[0].score = "1";
-                console.log(fetchedplan);
+                var cards = eventcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .text('These useful learning resources are going to expire! \n Do not miss them!')
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+            // plans.LoadAllPlans(function (fetchedplan) {
+            //     var fetchedplan = fetchedplan; 
+            //     console.log(fetchedplan);
+            //     console.log(fetchedplan[0]['PlanTitle']);
+            //     console.log(fetchedplan[0]['PlanTitle']);
+            //     fetchedplan[0].score = "1";
+            //     console.log(fetchedplan);
 
-            });
+            // });
 
         }        
 ])
