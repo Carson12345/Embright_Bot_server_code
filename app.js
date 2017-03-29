@@ -56,7 +56,7 @@ bot.on('conversationUpdate', message => {
             if (identity.id === message.address.bot.id) {
                 const reply = new builder.Message()
                     .address(message.address)
-                    .text('Welcome back! You have some new event and job updates. Say Hi to activate Muse.');
+                    .text('Welcome back! Say Hi to activate Muse.');
                     
                 bot.send(reply);
                 console.log(message.address);
@@ -685,12 +685,26 @@ function greetingcard(session) {
         ]),
 
         new builder.HeroCard(session)
+        .title('Find Creators')
+        .subtitle('I can also connect you with creators/designers/makers who work on projects you are interested in!')
+        .buttons([
+            builder.CardAction.imBack(session, 'Find Creators', 'Click here to start')
+        ]),
+
+        new builder.HeroCard(session)
         .title('Get job/freelance opportunities')
-        .subtitle('Describe the opportunity you are looking for! I will get you the perfect match.')
+        .subtitle('Describe to me the opportunity you are looking for! I will get you the perfect match.')
         .buttons([
             builder.CardAction.imBack(session, 'Get job/freelance opportunities', 'Click here to start')
         ]),
 
+        new builder.HeroCard(session)
+        .title('Get job/freelance opportunities')
+        .subtitle('Describe to me the opportunity you are looking for! I will get you the perfect match.')
+        .buttons([
+            builder.CardAction.imBack(session, 'Get job/freelance opportunities', 'Click here to start')
+        ]),
+        
         new builder.HeroCard(session)
         .title('Get events recommendation')
         .subtitle('Get recommendation of events/talks/courses/workshops/conferences according to your requirement')
