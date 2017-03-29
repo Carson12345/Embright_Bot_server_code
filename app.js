@@ -682,7 +682,7 @@ function greetingcard(session) {
         .subtitle('Want to find projects similar to what you are working on? Want to learn specific technical skills? Get inspired and learn from the projects of others!')
         .buttons([
             builder.CardAction.imBack(session, 'I need inspiration and ideas, find me some projects', 'Click here to start')
-        .image('https://s29.postimg.org/nv0tbrsqb/findproj-01-01.jpg')
+        .image([new builder.CardImage().url('https://s29.postimg.org/nv0tbrsqb/findproj-01-01.jpg')])
         ]),
 
         new builder.HeroCard(session)
@@ -690,7 +690,7 @@ function greetingcard(session) {
         .subtitle('I can also connect you with creators/designers/makers who work on projects you are interested in!')
         .buttons([
             builder.CardAction.imBack(session, 'Find Creators', 'Click here to start')
-        .image('https://s29.postimg.org/x1j3z1xyr/findppl-01.jpg')
+        .image([new builder.CardImage().url('https://s29.postimg.org/x1j3z1xyr/findppl-01.jpg')])
         ]),
 
         new builder.HeroCard(session)
@@ -698,7 +698,7 @@ function greetingcard(session) {
         .subtitle('Describe to me the opportunity you are looking for! I will get you the perfect match.')
         .buttons([
             builder.CardAction.imBack(session, 'Get job/freelance opportunities', 'Click here to start')
-        .image('https://s17.postimg.org/jq8ewbrq3/paper-01.jpg')
+        .image([new builder.CardImage().url('https://s17.postimg.org/jq8ewbrq3/paper-01.jpg')])
         ]),
         
         new builder.HeroCard(session)
@@ -706,13 +706,13 @@ function greetingcard(session) {
         .subtitle('Get recommendation of events/talks/courses/workshops/conferences according to your requirement')
         .buttons([
             builder.CardAction.imBack(session, 'Get events/workshop recommendation', 'Click here to start')
-        .image('https://s17.postimg.org/ggtzpv3mj/event-01.jpg')
+        .image([new builder.CardImage().url('https://s17.postimg.org/ggtzpv3mj/event-01.jpg')])
         ]),
 
         new builder.HeroCard(session)
         .title('Get jargons definition')
         .subtitle('Just ask me a question like "What is xxx?" or "Define xxx"')
-        .image('https://s17.postimg.org/lgrfxt997/quest-01.jpg')
+        .image([new builder.CardImage().url('https://s17.postimg.org/lgrfxt997/quest-01.jpg')])
     ]
 }
 //opportunities update
