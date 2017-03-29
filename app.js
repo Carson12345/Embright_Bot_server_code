@@ -693,7 +693,7 @@ function greetingcard(session) {
         .title('Find Creators')
         .subtitle('I can also connect you with creators/designers/makers who work on projects you are interested in!')
         .images([
-            builder.CardImage.create(session, 'https://s29.postimg.org/x1j3z1xyr/findppl-01.jpg')
+            builder.CardImage.create(session, 'https://thumb.ibb.co/mc5Zyv/09_01.jpg')
         ])
         .buttons([
             builder.CardAction.imBack(session, 'Find Creators', 'Click here to start')
