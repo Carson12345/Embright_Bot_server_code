@@ -681,7 +681,7 @@ function greetingcard(session) {
         .title('Find Projects')
         .subtitle('Want to find projects similar to what you are working on? Want to learn specific technical skills? Get inspired and learn from the projects of others!')
         .images([
-            builder.CardImage.create(session, 'https://s29.postimg.org/nv0tbrsqb/findproj-01-01.jpg')
+            builder.CardImage.create(session, 'https://s11.postimg.org/bng9q43b7/icons_proj2-01.jpg')
         ])
         .buttons([
             builder.CardAction.imBack(session, 'I need inspiration and ideas, find me some projects', 'Click here to start')
