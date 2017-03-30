@@ -705,7 +705,7 @@ function greetingcard(session) {
         .title('Get job/freelance opportunities')
         .subtitle('Describe to me the opportunity you are looking for! I will get you the perfect match.')
         .images([
-            builder.CardImage.create(session, 'https://s17.postimg.org/jq8ewbrq3/paper-01.jpg')
+            builder.CardImage.create(session, 'https://s24.postimg.org/m28ug0nat/icons_proj-01.jpg')
         ])
         .buttons([
             builder.CardAction.imBack(session, 'Get job/freelance opportunities', 'Click here to start')
