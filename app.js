@@ -679,7 +679,7 @@ function greetingcard(session) {
     return [
         new builder.HeroCard(session)
         .title('Find Projects')
-        .subtitle('Want to find projects similar to what you are working on? Want to learn specific technical skills? Get inspired and learn from the projects of others!')
+        .subtitle('Explore projects logs similar to what you are working on, learn specific technical skills and insights from experiences of others!')
         .images([
             builder.CardImage.create(session, 'https://s13.postimg.org/4dpbpu87r/icons_proj3-01.jpg')
         ])
