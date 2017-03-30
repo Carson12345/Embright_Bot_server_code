@@ -681,7 +681,7 @@ function greetingcard(session) {
         .title('Find Projects')
         .subtitle('Want to find projects similar to what you are working on? Want to learn specific technical skills? Get inspired and learn from the projects of others!')
         .images([
-            builder.CardImage.create(session, 'https://s11.postimg.org/bng9q43b7/icons_proj2-01.jpg')
+            builder.CardImage.create(session, 'https://s13.postimg.org/4dpbpu87r/icons_proj3-01.jpg')
         ])
         .buttons([
             builder.CardAction.imBack(session, 'I need inspiration and ideas, find me some projects', 'Click here to start')
@@ -693,7 +693,7 @@ function greetingcard(session) {
         .title('Find Creators')
         .subtitle('I can also connect you with creators/designers/makers who work on projects you are interested in!')
         .images([
-            builder.CardImage.create(session, 'https://s22.postimg.org/s0nxut9kx/09-01.jpg')
+            builder.CardImage.create(session, 'https://s16.postimg.org/sunkeafhx/icons_findppl-01.jpg')
         ])
         .buttons([
             builder.CardAction.imBack(session, 'Find Creators', 'Click here to start')
@@ -716,7 +716,7 @@ function greetingcard(session) {
         .title('Get events recommendation')
         .subtitle('Get recommendation of events/talks/courses/workshops/conferences according to your requirement')
         .images([
-            builder.CardImage.create(session, 'https://s17.postimg.org/ggtzpv3mj/event-01.jpg')
+            builder.CardImage.create(session, 'https://s29.postimg.org/m9x4bloqf/icons_find_events-01.jpg')
         ])
         .buttons([
             builder.CardAction.imBack(session, 'Get events/workshop recommendation', 'Click here to start')
@@ -728,7 +728,7 @@ function greetingcard(session) {
         .title('Get jargons definition')
         .subtitle('Just ask me a question like "What is xxx?" or "Define xxx"')
         .images([
-            builder.CardImage.create(session, 'https://s17.postimg.org/lgrfxt997/quest-01.jpg')
+            builder.CardImage.create(session, 'https://s10.postimg.org/h2cl1nqsp/icons_questions-01.jpg')
         ])
     ]
 }
