@@ -369,7 +369,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                 var cards = eventcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('[UPDATES] I think you will be interested in these events!')
+                    .text('I think you will be interested in these events!')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
@@ -524,7 +524,8 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
             var plan_chosen = results.response;
             plan_chosen_ID = plan_chosen;
             plans.EnrollPlan(results.response , userid);
-            session.send('Got it! This project has been saved to your collection. Make the best use of it!'), session.message.text;
+            session.send('Got it! This project has been saved to your collection. Make the best use of it! (P.S. Your choice and search record will be analysed for more accurate prediction next time, thank you!'), session.message.text;
+            //send data to database for learning - send plan title chosen, search request, plan id
          
          }
         
@@ -752,7 +753,7 @@ function eventcard(session) {
         .subtitle('2017年3月28日截止')
         .text('以微電影手法拍攝一個以燦爛人生作主題, 有了正能量我們便可以積極面對任何困難, 勇敢迎接每項挑戰, 通過幫助別人令自己人生更燦爛......')
         .images([
-            builder.CardImage.create(session, 'http://www.ymca.org.hk/sites/ymca_main/files/default_images/ymca_banner_0.jpg')
+            builder.CardImage.create(session, 'http://embrightweb.azurewebsites.net/img/ml.jpg')
         ])
         .buttons([
             builder.CardAction.openUrl(session, 'http://www.ymca.org.hk/zh-hant/minimovie2016/', 'Apply Now')
