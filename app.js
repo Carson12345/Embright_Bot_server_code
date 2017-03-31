@@ -611,26 +611,6 @@ function greetingcard(session) {
         ,
 
         new builder.HeroCard(session)
-        .title('Get Projects recommendation')
-        .subtitle('Check out the projects that we think you may be interested in!')
-        .images([
-            builder.CardImage.create(session, 'https://s24.postimg.org/m28ug0nat/icons_proj-01.jpg')
-        ])
-        .buttons([
-            builder.CardAction.imBack(session, 'project suggestions', 'Click here to start')
-    
-        ])
-        ,
-
-        new builder.HeroCard(session)
-        .title('Get jargons definition')
-        .subtitle('Just ask me a question like "What is xxx?" or "Define xxx"')
-        .images([
-            builder.CardImage.create(session, 'https://s10.postimg.org/h2cl1nqsp/icons_questions-01.jpg')
-        ])
-        ,
-
-        new builder.HeroCard(session)
         .title('Find Creators [Backend In Progress 70%]')
         .subtitle('I can also connect you with creators/designers/makers who work on projects you are interested in!')
         .images([
@@ -662,6 +642,26 @@ function greetingcard(session) {
         .buttons([
             builder.CardAction.imBack(session, 'Get events/workshop recommendation', 'Click here to start')
         
+        ])
+        ,
+        
+        new builder.HeroCard(session)
+        .title('Get jargons definition')
+        .subtitle('Just ask me a question like "What is xxx?" or "Define xxx"')
+        .images([
+            builder.CardImage.create(session, 'https://s10.postimg.org/h2cl1nqsp/icons_questions-01.jpg')
+        ])
+        ,
+
+        new builder.HeroCard(session)
+        .title('Get Projects recommendation')
+        .subtitle('Check out the projects that we think you may be interested in! [80% done]')
+        .images([
+            builder.CardImage.create(session, 'https://s24.postimg.org/m28ug0nat/icons_proj-01.jpg')
+        ])
+        .buttons([
+            builder.CardAction.imBack(session, 'project suggestions', 'Click here to start')
+    
         ])
 
     ]
