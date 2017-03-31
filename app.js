@@ -15,6 +15,12 @@ var updatecount = 0;
 var users = require('./users');
 var plans = require('./plans');
 
+
+var fs = require('fs');
+
+
+
+
 // This loads the environment variables from the .env file
 require('dotenv-extended').load();
 
@@ -84,39 +90,36 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
-                //sample request
-                var myJSONObject = 
-                {
-                    "documents": [
-                        {
-                        "language": "en",
-                        "id": "123345",
-                        "text": session.message.text
-                        }
-                    ]
-                };
-                request({
-                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
-                    method: "POST",
-                    headers: {
-                    "content-type": "application/json",
-                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
-                    },
-                    json: true,   // <--Very important!!!
-                    body: myJSONObject
+                // //sample request
+                // var myJSONObject = 
+                // {
+                //     "documents": [
+                //         {
+                //         "language": "en",
+                //         "id": "123345",
+                //         "text": session.message.text
+                //         }
+                //     ]
+                // };
+                // request({
+                //     url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+                //     method: "POST",
+                //     headers: {
+                //     "content-type": "application/json",
+                //     "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
+                //     },
+                //     json: true,   // <--Very important!!!
+                //     body: myJSONObject
                     
-                }, 
-                function(err, res, body) {
-                    var myans = body["documents"][0]["keyPhrases"][0];
-                    console.log(body["documents"]);
-                    console.log(myans);
-                    console.log(body["documents"][0]["keyPhrases"].length);
+                // }, 
+                // function(err, res, body) {
+                //     var myans = body["documents"][0]["keyPhrases"][0];
+                //     console.log(body["documents"]);
+                //     console.log(myans);
+                //     console.log(body["documents"][0]["keyPhrases"].length);
 
-                });
-                //end of sample request
-
-                
-                
+                // });
+                // //end of sample request
 
                 
   }
@@ -132,10 +135,10 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
             request({
                     url: queryUrl,
                     method: "POST",
-                    json: true,   // <--Very important!!!
-                    
+                    json: true,   // <--Very important!!!   
                 }, 
                 function(err, res, body) {
+                    try {
                     //var myans = JSON.stringify(body);
                     //console.log(body.query);
                     //var body = JSON.stringify(body);
@@ -157,219 +160,28 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                         .attachmentLayout(builder.AttachmentLayout.carousel)
                         .attachments(cards);
                     bot.send(reply);
-                    //create cards
                     
-                    
-                // `body` is a js object if request was successful
+                    } catch(error) 
+                        {
+                        const reply = new builder.Message()
+                            .address(address)
+                            .text('Sorry I cannot find any definition of [' + query.entity+']')
+                        bot.send(reply);
+                        }
                 });
                 //end of request
 
             }
     ])
 
-//Get Learning Plan
-    .matches('get_learning_plan', [
-
-        function (session, args, next) {
-            console.log(session);
-            //ID is not id, it means it is a unique record
-            topic_to_learn = builder.EntityRecognizer.findEntity(args.entities, 'topic_to_learn');
-            topic_to_learn_ID = topic_to_learn.entity;
-            builder.Prompts.text(session, 'Understood, let me find some projects that match what you just described.');
-            //sample request
-                var myJSONObject = 
-                {
-                    "documents": [
-                        {
-                        "language": "en",
-                        "id": session.message.address.user.id,
-                        "text": topic_to_learn_ID
-                        }
-                    ]
-                };
-                request({
-                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
-                    method: "POST",
-                    headers: {
-                    "content-type": "application/json",
-                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
-                    },
-                    json: true,   // <--Very important!!!
-                    body: myJSONObject
-                    
-                }, 
-                function(err, res, body) {
-                    console.log(body);
-                    var keyword = body["documents"][0]["keyPhrases"];
-                    console.log(body["documents"]);
-                    console.log("Keywords: "+keyword);
-                    console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length);
-                    topic_key = keyword[0];
-                    for(var i = 0; i < body["documents"][0]["keyPhrases"].length; i++) 
-                    {
-                        console.log(keyword[i]);
-                    }
-                 // `body` is a js object if request was successful
-                });
-                //end of sample request
-        },
-        function (session, results, next) {
-            var learning_goals = results.response;
-            learning_goals_ID = learning_goals;
-            //sample request
-                var myJSONObject = 
-                {
-                    "documents": [
-                        {
-                        "language": "en",
-                        "id": session.message.address.user.id,
-                        "text": learning_goals_ID
-                        }
-                    ]
-                };
-                request({
-                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
-                    method: "POST",
-                    headers: {
-                    "content-type": "application/json",
-                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
-                    },
-                    json: true,   // <--Very important!!!
-                    body: myJSONObject
-                    
-                }, 
-                function(err, res, body) {
-                    var keyword = body["documents"][0]["keyPhrases"];
-                    console.log(body["documents"]);
-                    console.log("Keywords: "+keyword);
-                    console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length);
-                    goal_key = keyword[0];
-                    for(var i = 0; i < body["documents"][0]["keyPhrases"].length; i++) 
-                    {
-                        console.log(keyword[i]);
-                    }
-                 // `body` is a js object if request was successful
-                });
-                //end of sample request
-            next();
-        },
-        function (session, args, next) {
-            builder.Prompts.text(session, 'Could you also describe a bit about yourself and your needs? For example are you a beginner or advanced learner to the topic? You can also tell me about your education background/preferences in learning, thank you!');
-        },
-        function (session, results, next) {
-            var learner_des = results.response;
-            learner_des_ID = learner_des;
-            //sample request
-                var myJSONObject = 
-                {
-                    "documents": [
-                        {
-                        "language": "en",
-                        "id": session.message.address.user.id,
-                        "text": learner_des_ID
-                        }
-                    ]
-                };
- 
-                request({
-                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
-                    method: "POST",
-                    headers: {
-                    "content-type": "application/json",
-                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
-                    },
-                    json: true,   // <--Very important!!!
-                    body: myJSONObject
-                    
-                }, 
-                function(err, res, body) {
-                    var keyword = body["documents"][0]["keyPhrases"];
-                    console.log(body["documents"]);
-                    console.log("Keywords: "+keyword);
-                    console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length);
-                    des_key = keyword[0];
-                    for(var i = 0; i < body["documents"][0]["keyPhrases"].length; i++) 
-                    {
-                        console.log(keyword[i]);
-                    }
-                 // `body` is a js object if request was successful
-                });
-                //end of sample request
-            
-            next();
-        },
-        function (session, args, next) {
-            var address = session.message.address;
-            plans.LoadAllPlanTopics(topic_key, function (fetchedtopicssbytopickey) {
-                for (var prop in fetchedtopicssbytopickey) {
-                    console.log("The relevant topics on database are: " + fetchedtopicssbytopickey[prop].PlanTopic);
-                    var cards = new Array();
-                    cards.push(topic_create(fetchedtopicssbytopickey, prop));
-                    const reply = new builder.Message()
-                        .address(address)
-                        .text('These are the relevant topics related to ' + topic_to_learn_ID.entity +' for you to start with.')
-                        .attachmentLayout(builder.AttachmentLayout.carousel)
-                        .attachments(cards);
-                    bot.send(reply);
-                    
-
-                }
-            });
-            // create reply with Carousel AttachmentLayout
-            builder.Prompts.text(session, 'please choose the one you are most interested in!');
-        },
-        function (session, results,next) {
-            var address = session.message.address;
-            
-            var topic_to_learn = results.response;
-            topic_to_learn_ID = topic_to_learn;
-            session.send('Nice choice! I am formulating some learning plans for you!', session.message.text);
-            //Find a right plan
-            plans.LoadSpecificPlanByPlanTopic(topic_to_learn_ID, function (fetchedplansbytopic) {
-                plans.LoadSpecificPlanByLearningOutcomes(goal_key, function (fetchedplansbygoal) {
-                    console.log(fetchedplansbytopic[0].PlanTitle);
-                    console.log("XXXXXXXXX");
-                    //createcards
-                    var cards = new Array();
-                    //for (i = 0; i < 2; i++) { 
-            
-                    cards.push(topic_card(fetchedplansbytopic));
-                    
-                    // create reply with Carousel AttachmentLayout
-                    
-                    const reply = new builder.Message()
-                        .address(address)
-                        .text('Here are my suggested plans')
-                        .attachmentLayout(builder.AttachmentLayout.carousel)
-                        .attachments(cards);
-                    bot.send(reply);
-                });
-            });
-            //create cards
-            builder.Prompts.text(session, 'Click one of them then I will help you put it in your collection!');
-        },
-         function (session, results,next) {
-            var userid = session.message.address.user.id;
-            var plan_chosen = results.response;
-            plan_chosen_ID = plan_chosen;
-            plans.EnrollPlan(results.response , userid);
-            session.send('Got it! The learning plan has been added to your profile! \n Start with the materials and opportunities in it, I will keep track of your progress and guide you!:)', session.message.text);
-         
-         }
-                
-    ])
-
-
-
-
 //Check updates resources
-    .matches('update_res', [
+    .matches('getevent', [
         function (session, args, next) 
             {
                 var cards = eventcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('I think you will be interested in these events!')
+                    .text('By studying your preferences, I think you will be interested in these events!')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
@@ -393,11 +205,64 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
             var learner_des = results.response;
             learner_des_ID = learner_des;
             session.send('Got it! Please note that we will also record your search data for more accurate recommendation next time', session.message.text);
+            session.send('We have finished by setting up our ML studio web services, we are still working on the Post an event/a job module, this smart recommendation module leveraging Azure Machine Learning will soon be live!', session.message.text);
+        }        
+])
+
+//Getjobs
+    .matches('getjob', [
+        function (session, args, next) 
+            {
+                var cards = eventcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .text('By studying your preferences, I think you will be interested in these positions!')
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+                
+            // plans.LoadAllPlans(function (fetchedplan) {
+            //     var fetchedplan = fetchedplan; 
+            //     console.log(fetchedplan);
+            //     console.log(fetchedplan[0]['PlanTitle']);
+            //     console.log(fetchedplan[0]['PlanTitle']);
+            //     fetchedplan[0].score = "1";
+            //     console.log(fetchedplan);
+
+            // });
+        next();
+
+        },
+         function (session, args, next) {
+            builder.Prompts.text(session, 'I can also find jobs according to your requirements. Please tell me your requirement');
+        },
+        function (session, results, next) {
+            var learner_des = results.response;
+            learner_des_ID = learner_des;
+            session.send('We have finished by setting up our ML studio web services, we are still working on the Post an event/a job module, this smart recommendation module leveraging Azure Machine Learning will soon be live!', session.message.text);
+        }        
+])
+
+//Getjobs
+    .matches('findppl', [
+         function (session, args, next) {
+            builder.Prompts.text(session, 'Please describe what kind of creators you are interested in, thank you.');
+        },
+        function (session, results, next) {
+            var learner_des = results.response;
+            learner_des_ID = learner_des;
+                var cards = pplcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .text('Here are the creators on Embright that match your request')
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
         }        
 ])
 
 //Check updates learn
-    .matches('update_learning', [
+    .matches('getproject', [
         function (session, args, next) 
             {
 
@@ -524,7 +389,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
             var plan_chosen = results.response;
             plan_chosen_ID = plan_chosen;
             plans.EnrollPlan(results.response , userid);
-            session.send('Got it! This project has been saved to your collection. Make the best use of it! (P.S. Your choice and search record will be analysed for more accurate prediction next time, thank you!'), session.message.text;
+            session.send('Got it! This project has been saved to your collection. Make the best use of it! Your choice and search record will be analysed for more accurate prediction next time'), session.message.text;
             //send data to database for learning - send plan title chosen, search request, plan id
          
          }
@@ -536,16 +401,22 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 
 
     .onDefault((session) => {
-
-        // console.log(session.message.attachments[0]['contentUrl']);
-        // session.send(session.message.attachments[0]['contentUrl'], session.message.text);
-        var cards = greetingcard(session);
+        try {
+            console.log(session.message.attachments[0]['contentUrl']);
+            session.send('Your file has been hosted temporalily! Please use the following url', session.message.text);
+            session.send(session.message.attachments[0]['contentUrl'], session.message.text);
+            
+        }
+        catch(error) {
+                var cards = greetingcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
                     .text('I understand but so far I can only provide the following functions. Sorry')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
+        }
+
     }));
 
 if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
@@ -564,6 +435,21 @@ if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
         }
     });
 }
+
+
+
+
+
+//download picture
+
+var downloadpic = function(uri, filename, callback){
+  request.head(uri, function(err, res, body){
+    console.log('content-type:', res.headers['content-type']);
+    console.log('content-length:', res.headers['content-length']);
+
+    request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+  });
+};
 
 
 
@@ -589,7 +475,9 @@ function topic_card(planobj,key) {
     return new builder.HeroCard()
         .title(planobj[key]['PlanTitle'])
         .subtitle(planobj[key]['PlanDetails'])
-        //.images([new builder.CardImage().url()])
+        .images([
+            builder.CardImage.create(null, ('http://embrightweb.azurewebsites.net' + planobj[key]['PlanPicture']))
+        ])
         .buttons([
             new builder.CardAction.postBack()
                                     .title('Add this to my profile')
@@ -634,17 +522,21 @@ function intersect_arr(a, b)
   return result;
 }
 //topic cards
-function topic_create(topicobj,prop) {
-    return new builder.HeroCard()
-        .title(topicobj[prop].PlanTopic)
-        //.images([new builder.CardImage().url()])
-        .buttons([
-            new builder.CardAction.postBack()
-                                    .title('Start with this')
-                                    .type('imBack')
-                                    .value(topicobj[prop].PlanTopic)
-        ]);
-}
+// function topic_create(topicobj,prop) {
+//     return new builder.HeroCard()
+//         .title(topicobj[prop].PlanTopic)
+//         //.images([new builder.CardImage().url()])
+//         .images([
+//             builder.CardImage.create(session, 'https://embrightweb.azurewebsites.net/public/' + topicobj[prop].PlanPicture)
+//         ])
+//         .buttons([
+//             new builder.CardAction.postBack()
+//                                     .title('Start with this')
+//                                     .type('imBack')
+//                                     .value(topicobj[prop].PlanTopic)
+//         ]);
+// }
+
 
 
 
@@ -652,25 +544,53 @@ function topic_create(topicobj,prop) {
 function jobcard(session) {
     return [ 
         new builder.HeroCard(session)
-        .title('Free Course: Visual Design and Motion Graphics')
-        .subtitle('Application Deadline: 26/3/2017')
-        .text('The last 3 free course of General Assembly Hong Kong, this one is especially designers and directors to be to learn about the concepts in visual design, which will help you to develop in many field......')
+        .title('Position: UX/UI Senior Designer')
+        .subtitle('Company: Emotio Design Group')
+        .text('Northwood, United Kingdom')
         .images([
-            builder.CardImage.create(session, 'https://ga-shop-production-herokuapp-com.global.ssl.fastly.net/assets/images/logo_1200_by_627_1QIVL.jpg')
+            builder.CardImage.create(session, 'https://pbs.twimg.com/media/Cu30JsSUkAA2LU5.jpg')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'https://generalassemb.ly/education/visual-design', 'Apply Now')
+            builder.CardAction.openUrl(session, 'https://emotio.typeform.com/to/D8gu3n', 'Apply Now')
         ]),
 
         new builder.HeroCard(session)
-        .title('第四屆全港中學微電影創作大賽')
-        .subtitle('2017年3月28日截止')
-        .text('以微電影手法拍攝一個以燦爛人生作主題, 有了正能量我們便可以積極面對任何困難, 勇敢迎接每項挑戰, 通過幫助別人令自己人生更燦爛......')
+        .title('Digital Art Director')
+        .subtitle('Company: One Rockwell')
+        .text('New York, NY, USA')
         .images([
-            builder.CardImage.create(session, 'http://www.ymca.org.hk/sites/ymca_main/files/default_images/ymca_banner_0.jpg')
+            builder.CardImage.create(session, 'https://my.hirehive.io/Public/ShowLogo/5153')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'http://www.ymca.org.hk/zh-hant/minimovie2016/', 'Apply Now')
+            builder.CardAction.openUrl(session, 'https://my.hirehive.io/1r/jobs/27357/digital-art-director-new-york', 'Apply Now')
+        ])   
+    ]
+}
+
+
+//pplcard
+function pplcard(session) {
+    return [ 
+        new builder.HeroCard(session)
+        .title('Russell Durant')
+        .subtitle('Northwood, United Kingdom')
+        .text('Cosplayer and engineer. Not working on commissions at this time, unless you are a game developer. And your name is Hideo Kojima. ')
+        .images([
+            builder.CardImage.create(session, 'http://icon-icons.com/icons2/884/PNG/512/person_4_icon-icons.com_68900.png')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'https://emotio.typeform.com/to/D8gu3n', 'Browse Projects')
+        ]),
+
+        new builder.HeroCard(session)
+        .title('Arika Ho')
+        .subtitle('New York, NY, USA')
+        .text('Founder of Lanacrafts Hong Kong. Happy to share my projects and techniques with other makers')
+        .images([
+            builder.CardImage.create(session, 'http://icon-icons.com/icons2/884/PNG/512/person_9_icon-icons.com_68901.png')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'https://my.hirehive.io/1r/jobs/27357/digital-art-director-new-york', 'Browse Projects')
         ])   
     ]
 }
@@ -685,13 +605,33 @@ function greetingcard(session) {
             builder.CardImage.create(session, 'https://s13.postimg.org/4dpbpu87r/icons_proj3-01.jpg')
         ])
         .buttons([
-            builder.CardAction.imBack(session, 'I need inspiration and ideas, find me some projects', 'Click here to start')
+            builder.CardAction.imBack(session, 'I need inspiration and ideas, can you help me find something?', 'Click here to start')
     
         ])
         ,
 
         new builder.HeroCard(session)
-        .title('Find Creators')
+        .title('Get Projects recommendation')
+        .subtitle('Check out the projects that we think you may be interested in!')
+        .images([
+            builder.CardImage.create(session, 'https://s24.postimg.org/m28ug0nat/icons_proj-01.jpg')
+        ])
+        .buttons([
+            builder.CardAction.imBack(session, 'project suggestions', 'Click here to start')
+    
+        ])
+        ,
+
+        new builder.HeroCard(session)
+        .title('Get jargons definition')
+        .subtitle('Just ask me a question like "What is xxx?" or "Define xxx"')
+        .images([
+            builder.CardImage.create(session, 'https://s10.postimg.org/h2cl1nqsp/icons_questions-01.jpg')
+        ])
+        ,
+
+        new builder.HeroCard(session)
+        .title('Find Creators [Backend In Progress 70%]')
         .subtitle('I can also connect you with creators/designers/makers who work on projects you are interested in!')
         .images([
             builder.CardImage.create(session, 'https://s16.postimg.org/sunkeafhx/icons_findppl-01.jpg')
@@ -703,7 +643,7 @@ function greetingcard(session) {
         ,
 
         new builder.HeroCard(session)
-        .title('Get job/freelance opportunities')
+        .title('Get job/freelance opportunities [Backend In Progress 70%]')
         .subtitle('Describe to me the opportunity you are looking for! I will get you the perfect match.')
         .images([
             builder.CardImage.create(session, 'https://s2.postimg.org/v02k6gzvt/icons_findjob-01.jpg')
@@ -714,7 +654,7 @@ function greetingcard(session) {
         ,
         
         new builder.HeroCard(session)
-        .title('Get events recommendation')
+        .title('Get events recommendation [Backend In Progress 70%]')
         .subtitle('Get recommendation of events/talks/courses/workshops/conferences according to your requirement')
         .images([
             builder.CardImage.create(session, 'https://s29.postimg.org/m9x4bloqf/icons_find_events-01.jpg')
@@ -723,14 +663,7 @@ function greetingcard(session) {
             builder.CardAction.imBack(session, 'Get events/workshop recommendation', 'Click here to start')
         
         ])
-        ,
 
-        new builder.HeroCard(session)
-        .title('Get jargons definition')
-        .subtitle('Just ask me a question like "What is xxx?" or "Define xxx"')
-        .images([
-            builder.CardImage.create(session, 'https://s10.postimg.org/h2cl1nqsp/icons_questions-01.jpg')
-        ])
     ]
 }
 //opportunities update
@@ -739,7 +672,7 @@ function eventcard(session) {
     return [ 
         new builder.HeroCard(session)
         .title('Free Course: Visual Design and Motion Graphics')
-        .subtitle('Application Deadline: 26/3/2017')
+        .subtitle('Application Deadline: 26/4/2017')
         .text('The last 3 free course of General Assembly Hong Kong, this one is especially designers and directors to be to learn about the concepts in visual design, which will help you to develop in many field......')
         .images([
             builder.CardImage.create(session, 'https://ga-shop-production-herokuapp-com.global.ssl.fastly.net/assets/images/logo_1200_by_627_1QIVL.jpg')
@@ -749,14 +682,14 @@ function eventcard(session) {
         ]),
 
         new builder.HeroCard(session)
-        .title('第四屆全港中學微電影創作大賽')
-        .subtitle('2017年3月28日截止')
-        .text('以微電影手法拍攝一個以燦爛人生作主題, 有了正能量我們便可以積極面對任何困難, 勇敢迎接每項挑戰, 通過幫助別人令自己人生更燦爛......')
+        .title('The 21st ifva Awards')
+        .subtitle('Deadline: 7/4/2017')
+        .text('To discover and nurture the next currents for local creative industry of moving images....')
         .images([
-            builder.CardImage.create(session, 'http://embrightweb.azurewebsites.net/img/ml.jpg')
+            builder.CardImage.create(session, 'http://www.ifva.com/wp-content/uploads/21st_webbanner.jpg')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'http://www.ymca.org.hk/zh-hant/minimovie2016/', 'Apply Now')
+            builder.CardAction.openUrl(session, 'http://www.ifva.com/?p=7620&lang=en', 'Apply Now')
         ])   
     ]
 }
@@ -765,32 +698,13 @@ function eventcard(session) {
 
 
 //                     //sample request
-//                 var myJSONObject = 
-//                 {
-//                     "documents": [
-//                         {
-//                         "language": "en",
-//                         "id": "123345",
-//                         "text": session.message.text
-//                         }
-//                     ]
-//                 };
 //                 request({
-//                     url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
+//                     url: "https://api.imgur.com/3/upload",
 //                     method: "POST",
-//                     headers: {
-//                     "content-type": "application/json",
-//                     "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
-//                     },
-//                     json: true,   // <--Very important!!!
-//                     body: myJSONObject
-                    
+//                     image: '' 
 //                 }, 
 //                 function(err, res, body) {
-//                     var myans = body["documents"][0]["keyPhrases"][0];
-//                     console.log(body["documents"]);
-//                     console.log(myans);
-//                     console.log(body["documents"][0]["keyPhrases"].length);
+//                     console.log(body);
 //   // `body` is a js object if request was successful
 //                 });
-//                 //end of sample request
+                //end of sample request
