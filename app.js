@@ -477,8 +477,8 @@ function topic_card(planobj,key) {
         //.subtitle(planobj[key]['PlanDetails'])
         .subtitle('This is a taiwan individual documentary project about a daugther and her lesbian mother')
         .images([
-            //builder.CardImage.create(null, ('http://embrightweb.azurewebsites.net' + planobj[key]['PlanPicture']))
-            builder.CardImage.create(null, ('https://priestesswalksalone.files.wordpress.com/2014/05/e9a696e9a081e59c9612.jpg?w=1024&h=426&crop=1'))
+            builder.CardImage.create(null, ('http://embrightweb.azurewebsites.net' + planobj[key]['PlanPicture']))
+            
         ])
         .buttons([
             new builder.CardAction.postBack()
