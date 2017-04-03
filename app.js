@@ -474,8 +474,8 @@ function constructwikiCard(page) {
 function topic_card(planobj,key) {
     return new builder.HeroCard()
         .title(planobj[key]['PlanTitle'])
-        //.subtitle(planobj[key]['PlanDetails'])
-        .subtitle('This is a taiwan individual documentary project about a daugther and her lesbian mother')
+        .subtitle(planobj[key]['PlanDetails'])
+
         .images([
             builder.CardImage.create(null, (planobj[key]['PlanPicture']))
         ])
