@@ -53,7 +53,7 @@ const textapikey = "ce6e99c7adf64cd196462ffb0646cd09";
 // This Url can be obtained by uploading or creating your model from the LUIS portal: https://www.luis.ai/
 
 
-const LuisModelUrl = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/beebbe22-7ebb-4904-aa67-c79aef4a2e76?subscription-key=46903b96fcad4ae081d17a710e8f6113&timezoneOffset=0.0&verbose=true&q=';
+const LuisModelUrl = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/317d5192-256e-44cc-b72d-e1b356c5dd94?subscription-key=62567d4d83e14ca9adac5c59e6b8095f&verbose=true&timezoneOffset=0.0&q=';
 
 
 // Main dialog with LUIS
@@ -91,7 +91,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                 var cards = greetingcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('Hi, '+ session.message.address.user.name +'! I am ready to get the inspiration and learning references you need. How can I help you?')
+                    .text('Hi, '+ session.message.address.user.name +'! How can I help you?')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
@@ -131,11 +131,11 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
     ])
 
 //Get Definition
-    .matches('get_definition', [
+    .matches('def', [
         function (session, args, next) 
             {
             var address = session.message.address;
-            var query = builder.EntityRecognizer.findEntity(args.entities, 'def_search');
+            var query = builder.EntityRecognizer.findEntity(args.entities, 'defquery');
             var queryUrl = "https://en.wikipedia.org/w/api.php?format=json&action=query&generator=search&gsrnamespace=0&gsrlimit=10&prop=extracts&exintro&explaintext&exsentences=5&exlimit=max&gsrsearch=" + query.entity;
             request({
                     url: queryUrl,
@@ -457,53 +457,53 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
     .onDefault(
         
 
-        session => {
-    if (hasImageAttachment(session)) {
-        var stream = getImageStreamFromAttachment(session.message.attachments[0]);
-        imageService
-            .getSimilarProductsFromStream(stream)
-            .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
-            .catch(error => handleErrorResponse(session, error));
-    } else {
-        var imageUrl = parseAnchorTag(session.message.text) || (validUrl.isUri(session.message.text) ? session.message.text : null);
-        if (imageUrl) {
-            imageService
-                .getSimilarProductsFromUrl(imageUrl)
-                .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
-                .catch(error => handleErrorResponse(session, error));
-        } else {
-            var seaquery = session.message.text;
-            imageService
-                .getSimilarProductsFromtext(seaquery)
-                .then(value => handleApiResponse(session, value))
-                .catch(error => handleErrorResponse(session, error));
+//         session => {
+//     if (hasImageAttachment(session)) {
+//         var stream = getImageStreamFromAttachment(session.message.attachments[0]);
+//         imageService
+//             .getSimilarProductsFromStream(stream)
+//             .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
+//             .catch(error => handleErrorResponse(session, error));
+//     } else {
+//         var imageUrl = parseAnchorTag(session.message.text) || (validUrl.isUri(session.message.text) ? session.message.text : null);
+//         if (imageUrl) {
+//             imageService
+//                 .getSimilarProductsFromUrl(imageUrl)
+//                 .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
+//                 .catch(error => handleErrorResponse(session, error));
+//         } else {
+//             var seaquery = session.message.text;
+//             imageService
+//                 .getSimilarProductsFromtext(seaquery)
+//                 .then(value => handleApiResponse(session, value))
+//                 .catch(error => handleErrorResponse(session, error));
 
         
-    }
-    }
-}
+//     }
+//     }
+// }
          
-    //     (session) => {
-    //     try {
-    //         console.log(session.message.attachments[0]['contentUrl']);
-    //         session.send('Your file has been hosted temporalily! Please use the following url', session.message.text);
-    //         session.send(session.message.attachments[0]['contentUrl'], session.message.text);
+        (session) => {
+        try {
+            console.log(session.message.attachments[0]['contentUrl']);
+            session.send('Your file has been hosted temporalily! Please use the following url', session.message.text);
+            session.send(session.message.attachments[0]['contentUrl'], session.message.text);
             
-    //     }
-    //     catch(error) {
-    //             var cards = greetingcard(session);
-    //             // attach the card to the reply message
-    //             var reply = new builder.Message(session)
-    //                 .text('I understand but so far I can only provide the following functions. Sorry')
-    //                 .attachmentLayout(builder.AttachmentLayout.carousel)
-    //                 .attachments(cards);
-    //             session.send(reply);
-    //     }
+        }
+        catch(error) {
+                var cards = greetingcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .text('I understand but so far I can only provide the following functions. Sorry')
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+        }
 
-    // })
+    })
     
     
-    ));
+    );
 
 if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
     bot.use({
@@ -687,69 +687,50 @@ function greetingcard(session) {
     return [
         new builder.HeroCard(session)
         .title('Find Projects')
-        .subtitle('Explore projects logs similar to what you are working on, learn specific technical skills and insights from experiences of others!')
-        .images([
-            builder.CardImage.create(session, 'https://s13.postimg.org/4dpbpu87r/icons_proj3-01.jpg')
-        ])
+        .subtitle('Explore projects that match your requirements to take reference on and learn')
+        // .images([
+        //     builder.CardImage.create(session, 'https://s13.postimg.org/4dpbpu87r/icons_proj3-01.jpg')
+        // ])
         .buttons([
-            builder.CardAction.imBack(session, 'I need inspiration and ideas, can you help me find something?', 'Click here to start')
+            builder.CardAction.imBack(session, 'find projects', 'Find')
     
         ])
         ,
 
         new builder.HeroCard(session)
-        .title('Find Creators [Backend In Progress 70%]')
-        .subtitle('I can also connect you with creators/designers/makers who work on projects you are interested in!')
-        .images([
-            builder.CardImage.create(session, 'https://s16.postimg.org/sunkeafhx/icons_findppl-01.jpg')
-        ])
+        .title('Find and Buy Equipment/Materials')
+        .subtitle('Tell me what equipment or material you need or send me a picture of it, I will find it for you and help you order them online')
+        // .images([
+        //     builder.CardImage.create(session, 'https://s16.postimg.org/sunkeafhx/icons_findppl-01.jpg')
+        // ])
         .buttons([
-            builder.CardAction.imBack(session, 'Find Creators', 'Click here to start')
+            builder.CardAction.imBack(session, 'buy', 'Find and Buy')
         
         ])
         ,
 
         new builder.HeroCard(session)
-        .title('Get job/freelance opportunities [Backend In Progress 70%]')
-        .subtitle('Describe to me the opportunity you are looking for! I will get you the perfect match.')
-        .images([
-            builder.CardImage.create(session, 'https://s2.postimg.org/v02k6gzvt/icons_findjob-01.jpg')
-        ])
+        .title('Find Makerspace/Maker Event')
+        .subtitle('Let me know if you want to find any Makerspace in your city or Makers events!')
+        // .images([
+        //     builder.CardImage.create(session, 'https://s2.postimg.org/v02k6gzvt/icons_findjob-01.jpg')
+        // ])
         .buttons([
-            builder.CardAction.imBack(session, 'Get job/freelance opportunities', 'Click here to start')
-        ])
-        ,
+            builder.CardAction.imBack(session, 'Find Makerspace/Events', 'Find Makerspace/Events')
         
-        new builder.HeroCard(session)
-        .title('Get events recommendation [Backend In Progress 70%]')
-        .subtitle('Get recommendation of events/talks/courses/workshops/conferences according to your requirement')
-        .images([
-            builder.CardImage.create(session, 'https://s29.postimg.org/m9x4bloqf/icons_find_events-01.jpg')
-        ])
-        .buttons([
-            builder.CardAction.imBack(session, 'Get events/workshop recommendation', 'Click here to start')
-        
-        ])
-        ,
-        
-        new builder.HeroCard(session)
-        .title('Get jargons definition')
-        .subtitle('Just ask me a question like "What is xxx?" or "Define xxx"')
-        .images([
-            builder.CardImage.create(session, 'https://s10.postimg.org/h2cl1nqsp/icons_questions-01.jpg')
         ])
         ,
 
         new builder.HeroCard(session)
-        .title('Get Projects recommendation')
-        .subtitle('Check out the projects that we think you may be interested in! [80% done]')
-        .images([
-            builder.CardImage.create(session, 'https://s24.postimg.org/m28ug0nat/icons_proj-01.jpg')
-        ])
-        .buttons([
-            builder.CardAction.imBack(session, 'project suggestions', 'Click here to start')
-    
-        ])
+        .title('Get technical term definition')
+        .subtitle('Facing jargons or technical terms you never seen? I can tell you what it is! Just ask me!')
+        // .images([
+        //     builder.CardImage.create(session, 'https://s2.postimg.org/v02k6gzvt/icons_findjob-01.jpg')
+        // ])
+
+        
+        
+
 
     ]
 }
