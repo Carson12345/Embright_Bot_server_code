@@ -5,7 +5,6 @@ var net = require('net');
 var app = connect();
 // require request-ip and register it as middleware
 var requestIp = require('request-ip');
-var request = require('request');
 var builder = require('botbuilder');
 var restify = require('restify');
 var Store = require('./store');
@@ -14,7 +13,10 @@ var mssql = require('mssql');
 var updatecount = 0;
 var users = require('./users');
 var plans = require('./plans');
-
+const imageService = require('./image-service'),
+    request = require('request').defaults({ encoding: null }),
+    url = require('url'),
+    validUrl = require('valid-url');
 
 var fs = require('fs');
 
@@ -41,14 +43,17 @@ var bot = new builder.UniversalBot(connector);
 server.use(restify.bodyParser());
 server.post('/api/messages', connector.listen());
 
+// Maximum number of hero cards to be returned in the carousel. If this number is greater than 10, skype throws an exception.
+const MAX_CARD_COUNT = 10;
 
+const textapikey = "ce6e99c7adf64cd196462ffb0646cd09";
 
 
 // You can provide your own model by specifing the 'LUIS_MODEL_URL' environment variable
 // This Url can be obtained by uploading or creating your model from the LUIS portal: https://www.luis.ai/
 
 
-const LuisModelUrl = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/00d6a6ad-2b11-4394-85fc-3d3caf93dbfe?subscription-key=a1f42de5ed314293b43575812478fbf8&verbose=true&q=';
+const LuisModelUrl = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/beebbe22-7ebb-4904-aa67-c79aef4a2e76?subscription-key=46903b96fcad4ae081d17a710e8f6113&timezoneOffset=0.0&verbose=true&q=';
 
 
 // Main dialog with LUIS
@@ -262,7 +267,50 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 ])
 
 //Check updates learn
-    .matches('getproject', [
+    .matches('buy', [
+
+    function (session, args, next) {
+            builder.Prompts.text(session, 'Please describe what you want o buy, or give me a picture of what you are looking for');
+        },
+        function (session, results, next) {
+            var learner_des = results.response;
+            learner_des_ID = learner_des;
+            next();
+        },
+        session => {
+    if (hasImageAttachment(session)) {
+        var stream = getImageStreamFromAttachment(session.message.attachments[0]);
+        imageService
+            .getSimilarProductsFromStream(stream)
+            .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
+            .catch(error => handleErrorResponse(session, error));
+    } else {
+        var imageUrl = parseAnchorTag(session.message.text) || (validUrl.isUri(session.message.text) ? session.message.text : null);
+        if (imageUrl) {
+            imageService
+                .getSimilarProductsFromUrl(imageUrl)
+                .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
+                .catch(error => handleErrorResponse(session, error));
+        } else {
+            var query = learner_des_ID;
+            imageService
+                .getSimilarProductsFromtext(query)
+                .then(value => handleApiResponse(session, value))
+                .catch(error => handleErrorResponse(session, error));
+
+        
+    }
+    }
+}
+        
+])
+
+
+
+
+
+
+.matches('findproj', [
         function (session, args, next) 
             {
 
@@ -270,7 +318,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
             },
             function (session, results, next) {
             var learner_des = results.response;
-            learner_des_ID = learner_des;
+            learner_des_ID = learner_des
             //sample request
                 var myJSONObject = 
                 {
@@ -288,7 +336,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     method: "POST",
                     headers: {
                     "content-type": "application/json",
-                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
+                    "Ocp-Apim-Subscription-Key": textapikey
                     },
                     json: true,   // <--Very important!!!
                     body: myJSONObject
@@ -327,7 +375,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                                     method: "POST",
                                     headers: {
                                     "content-type": "application/json",
-                                    "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
+                                    "Ocp-Apim-Subscription-Key": textapikey
                                     },
                                     json: true,   // <--Very important!!!
                                     body: Projdes
@@ -400,24 +448,62 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 
 
 
-    .onDefault((session) => {
-        try {
-            console.log(session.message.attachments[0]['contentUrl']);
-            session.send('Your file has been hosted temporalily! Please use the following url', session.message.text);
-            session.send(session.message.attachments[0]['contentUrl'], session.message.text);
-            
-        }
-        catch(error) {
-                var cards = greetingcard(session);
-                // attach the card to the reply message
-                var reply = new builder.Message(session)
-                    .text('I understand but so far I can only provide the following functions. Sorry')
-                    .attachmentLayout(builder.AttachmentLayout.carousel)
-                    .attachments(cards);
-                session.send(reply);
-        }
 
-    }));
+
+
+
+
+
+    .onDefault(
+        
+
+        session => {
+    if (hasImageAttachment(session)) {
+        var stream = getImageStreamFromAttachment(session.message.attachments[0]);
+        imageService
+            .getSimilarProductsFromStream(stream)
+            .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
+            .catch(error => handleErrorResponse(session, error));
+    } else {
+        var imageUrl = parseAnchorTag(session.message.text) || (validUrl.isUri(session.message.text) ? session.message.text : null);
+        if (imageUrl) {
+            imageService
+                .getSimilarProductsFromUrl(imageUrl)
+                .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
+                .catch(error => handleErrorResponse(session, error));
+        } else {
+            var seaquery = session.message.text;
+            imageService
+                .getSimilarProductsFromtext(seaquery)
+                .then(value => handleApiResponse(session, value))
+                .catch(error => handleErrorResponse(session, error));
+
+        
+    }
+    }
+}
+         
+    //     (session) => {
+    //     try {
+    //         console.log(session.message.attachments[0]['contentUrl']);
+    //         session.send('Your file has been hosted temporalily! Please use the following url', session.message.text);
+    //         session.send(session.message.attachments[0]['contentUrl'], session.message.text);
+            
+    //     }
+    //     catch(error) {
+    //             var cards = greetingcard(session);
+    //             // attach the card to the reply message
+    //             var reply = new builder.Message(session)
+    //                 .text('I understand but so far I can only provide the following functions. Sorry')
+    //                 .attachmentLayout(builder.AttachmentLayout.carousel)
+    //                 .attachments(cards);
+    //             session.send(reply);
+    //     }
+
+    // })
+    
+    
+    ));
 
 if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
     bot.use({
@@ -697,15 +783,95 @@ function eventcard(session) {
 
 
 
+//=========================================================
+// Utilities
+//=========================================================
 
-//                     //sample request
-//                 request({
-//                     url: "https://api.imgur.com/3/upload",
-//                     method: "POST",
-//                     image: '' 
-//                 }, 
-//                 function(err, res, body) {
-//                     console.log(body);
-//   // `body` is a js object if request was successful
-//                 });
-                //end of sample request
+const hasImageAttachment = session => {
+    return session.message.attachments.length > 0 &&
+        session.message.attachments[0].contentType.indexOf('image') !== -1;
+};
+const getImageStreamFromAttachment = attachment => {
+    var headers = {};
+    if (isSkypeAttachment(attachment)) {
+        // The Skype attachment URLs are secured by JwtToken,
+        // you should set the JwtToken of your bot as the authorization header for the GET request your bot initiates to fetch the image.
+        // https://github.com/Microsoft/BotBuilder/issues/662
+        connector.getAccessToken((error, token) => {
+            var tok = token;
+            headers['Authorization'] = 'Bearer ' + token;
+            headers['Content-Type'] = 'application/octet-stream';
+
+            return request.get({ url: attachment.contentUrl, headers: headers });
+        });
+    }
+
+    headers['Content-Type'] = attachment.contentType;
+    return request.get({ url: attachment.contentUrl, headers: headers });
+};
+
+const isSkypeAttachment = attachment => {
+    if (url.parse(attachment.contentUrl).hostname.substr(-'skype.com'.length) === 'skype.com') {
+        return true;
+    }
+
+    return false;
+};
+
+/**
+ * Gets the href value in an anchor element.
+ * Skype transforms raw urls to html. Here we extract the href value from the url
+ * @param {string} input Anchor Tag
+ * @return {string} Url matched or null
+ */
+const parseAnchorTag = input => {
+    var match = input.match("^<a href=\"([^\"]*)\">[^<]*</a>$");
+    if (match && match[1]) {
+        return match[1];
+    }
+
+    return null;
+};
+
+//=========================================================
+// Response Handling
+//=========================================================
+
+const handleApiResponse = (session, images) => {
+    if (images && images.constructor === Array && images.length > 0) {
+
+        var productCount = Math.min(MAX_CARD_COUNT, images.length);
+
+        var cards = new Array();
+        for (var i = 0; i < productCount; i++) {
+            cards.push(constructCard(session, images[i]));
+        }
+
+        // create reply with Carousel AttachmentLayout
+        var reply = new builder.Message(session)
+            .text('Here are some products I found')
+            .attachmentLayout(builder.AttachmentLayout.carousel)
+            .attachments(cards);
+        session.send(reply);
+    } else {
+        session.send('Couldn\'t find similar products');
+    }
+};
+
+const constructCard = (session, image) => {
+    return new builder.HeroCard(session)
+        .title(image.name)
+        .subtitle(image.hostPageDisplayUrl)
+        .images([
+            builder.CardImage.create(session, image.thumbnailUrl)
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, image.hostPageUrl, 'View More Product Info'),
+            builder.CardAction.openUrl(session, image.webSearchUrl, 'Buy now')
+        ]);
+};
+
+const handleErrorResponse = (session, error) => {
+    session.send('Oops! Something went wrong. Try again later.');
+    console.error(error);
+};
