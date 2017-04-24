@@ -215,13 +215,13 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 ])
 
 //Getjobs
-    .matches('getjob', [
+    .matches('getplace', [
         function (session, args, next) 
             {
-                var cards = eventcard(session);
+                var cards = spacecard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('By studying your preferences, I think you will be interested in these positions!')
+                    .text('Considering your current projects, I would suggest these places and events!')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
@@ -239,12 +239,12 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 
         },
          function (session, args, next) {
-            builder.Prompts.text(session, 'I can also find jobs according to your requirements. Please tell me your requirement');
+            builder.Prompts.text(session, 'I can help you reserve a place according to your choice');
         },
         function (session, results, next) {
             var learner_des = results.response;
             learner_des_ID = learner_des;
-            session.send('We have finished by setting up our ML studio web services, we are still working on the Post an event/a job module, this smart recommendation module leveraging Azure Machine Learning will soon be live!', session.message.text);
+            session.send('Thanks, we will send you a confirmation email soon!', session.message.text);
         }        
 ])
 
@@ -270,7 +270,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('buy', [
 
     function (session, args, next) {
-            builder.Prompts.text(session, 'Please describe what you want o buy, or give me a picture of what you are looking for');
+            builder.Prompts.text(session, 'Please describe what you want to buy, or give me a picture of what you are looking for');
         },
         function (session, results, next) {
             var learner_des = results.response;
@@ -300,8 +300,14 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
 
         
     }
-    }
 }
+builder.Prompts.text(session, 'These are the products I found!');
+}, 
+function (session, results) {
+            var learner_des = results.response;
+            learner_des_ID = learner_des;
+            session.send('Thank you! The product has been added to your order list.', session.message.text);
+        }
         
 ])
 
@@ -314,7 +320,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
         function (session, args, next) 
             {
 
-            builder.Prompts.text(session, 'Got it, can you describe what you are looking for? (e.g. I am working on a project about ...... / I want to find someone doing ...... / I want to learn how to ......)');
+            builder.Prompts.text(session, 'Got it, can you describe what you are looking for or what are you working at?');
             },
             function (session, results, next) {
             var learner_des = results.response;
@@ -430,14 +436,14 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                 //end of sample request
             
             
-            builder.Prompts.text(session, 'Click one of the following then I will add it into your collection!');
+            builder.Prompts.text(session, 'Thanks! Click one of the following then I will add it into your collection!');
         },
          function (session, results,next) {
             var userid = session.message.address.user.id;
             var plan_chosen = results.response;
             plan_chosen_ID = plan_chosen;
             plans.EnrollPlan(results.response , userid);
-            session.send('Got it! This project has been saved to your collection. Make the best use of it! Your choice and search record will be analysed for more accurate prediction next time'), session.message.text;
+            session.send('Got it! This project has been saved to your collection. Thank you!'), session.message.text;
             //send data to database for learning - send plan title chosen, search request, plan id
          
          }
@@ -628,28 +634,39 @@ function intersect_arr(a, b)
 
 
 //jobcards
-function jobcard(session) {
+function spacecard(session) {
     return [ 
         new builder.HeroCard(session)
-        .title('Position: UX/UI Senior Designer')
-        .subtitle('Company: Emotio Design Group')
-        .text('Northwood, United Kingdom')
+        .title('Maker Hive Kennedy Town')
+        .subtitle('Makerspace')
+        .text('Space Available at period 12 May to 25 May')
         .images([
-            builder.CardImage.create(session, 'https://pbs.twimg.com/media/Cu30JsSUkAA2LU5.jpg')
+            builder.CardImage.create(session, 'http://makerhive.com.hk/wp-content/uploads/2015/05/makerhive_homepage_1.jpg')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'https://emotio.typeform.com/to/D8gu3n', 'Apply Now')
+            builder.CardAction.openUrl(session, 'https://emotio.typeform.com/to/D8gu3n', 'Book Now')
         ]),
 
         new builder.HeroCard(session)
-        .title('Digital Art Director')
-        .subtitle('Company: One Rockwell')
-        .text('New York, NY, USA')
+        .title('Maker Bay Hong Kong')
+        .subtitle('Makerspace')
+        .text('Space Available at period 22 April to 30 April')
         .images([
-            builder.CardImage.create(session, 'https://my.hirehive.io/Public/ShowLogo/5153')
+            builder.CardImage.create(session, 'https://coconuts.co/public/public/inline/images/makeybay.jpg?itok=8lVXxASR')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'https://my.hirehive.io/1r/jobs/27357/digital-art-director-new-york', 'Apply Now')
+            builder.CardAction.openUrl(session, 'https://www.makerbay.org/', 'Book Now')
+        ]),   
+
+        new builder.HeroCard(session)
+        .title('Intro to Soldering: Acrylic LED Lamp')
+        .subtitle('Workshop')
+        .text('Ever been curious about how to solder electronic components? Join us for our Intro to Soldering Workshop......')
+        .images([
+            builder.CardImage.create(session, 'https://i.ytimg.com/vi/y0InEFdWfZc/maxresdefault.jpg')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'http://thehivekennedytown.com.hk/', 'Book Now')
         ])   
     ]
 }
@@ -830,25 +847,25 @@ const handleApiResponse = (session, images) => {
 
         // create reply with Carousel AttachmentLayout
         var reply = new builder.Message(session)
-            .text('Here are some products I found')
+            // .text('Here are some products I found')
             .attachmentLayout(builder.AttachmentLayout.carousel)
             .attachments(cards);
         session.send(reply);
     } else {
-        session.send('Couldn\'t find similar products');
+        session.send('Couldn\'t find similar products :( ');
     }
 };
 
 const constructCard = (session, image) => {
     return new builder.HeroCard(session)
         .title(image.name)
-        .subtitle(image.hostPageDisplayUrl)
+        .subtitle("Price: USD " + Math.floor((Math.random() * 100) + 600)/100 + " || " + Math.floor((Math.random() * 132230) + 623400) + " People have bought this" )
         .images([
             builder.CardImage.create(session, image.thumbnailUrl)
         ])
         .buttons([
-            builder.CardAction.openUrl(session, image.hostPageUrl, 'View More Product Info'),
-            builder.CardAction.openUrl(session, image.webSearchUrl, 'Buy now')
+            builder.CardAction.postBack(session, image.hostPageUrl,'Add to order list'),
+            builder.CardAction.openUrl(session, image.hostPageUrl, 'Buy now')
         ]);
 };
 
