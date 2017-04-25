@@ -636,6 +636,18 @@ function intersect_arr(a, b)
 //jobcards
 function spacecard(session) {
     return [ 
+
+        new builder.HeroCard(session)
+        .title('Intro to Soldering: Acrylic LED Lamp')
+        .subtitle('Workshop')
+        .text('Ever been curious about how to solder electronic components? Join us for our Intro to Soldering Workshop......')
+        .images([
+            builder.CardImage.create(session, 'https://i.ytimg.com/vi/y0InEFdWfZc/maxresdefault.jpg')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'http://thehivekennedytown.com.hk/', 'Book Now')
+        ]),
+           
         new builder.HeroCard(session)
         .title('Maker Hive Kennedy Town')
         .subtitle('Makerspace')
