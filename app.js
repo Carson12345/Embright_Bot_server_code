@@ -638,16 +638,27 @@ function spacecard(session) {
     return [ 
 
         new builder.HeroCard(session)
-        .title('Intro to Soldering: Acrylic LED Lamp')
-        .subtitle('Workshop')
-        .text('Ever been curious about how to solder electronic components? Join us for our Intro to Soldering Workshop......')
+        .title('Maker Faire Hong Kong 2017 x Make Big')
+        .subtitle('Maker Faire')
+        .text('"Maker Faire Hong Kong 2017 x Make Big" is a must-attend event for Hong Kong Makers. Together we hope to promote “Maker Culture” to the general public, demonstrating creativity, inventiveness and resourcefulness.')
         .images([
-            builder.CardImage.create(session, 'https://i.ytimg.com/vi/y0InEFdWfZc/maxresdefault.jpg')
+            builder.CardImage.create(session, 'http://www.makerfairehongkong.com/2017/wp-content/themes/mfhk2017/images/mfhk_logo.svg')
         ])
         .buttons([
             builder.CardAction.openUrl(session, 'http://thehivekennedytown.com.hk/', 'Book Now')
         ]),
-           
+
+        new builder.HeroCard(session)
+        .title('HardUST')
+        .subtitle('Maker Hakathon')
+        .text('The best Maker Hackathon in Hong Kong. We take care of all the equipment and hardware.')
+        .images([
+            builder.CardImage.create(session, 'http://www.rs-online.com/designspark/rel-assets/ds-assets/uploads/images/5536235344a848b780697bb90ab544b911080312_523893821081893_2918231974055894422_o.jpg')
+        ])
+        .buttons([
+            builder.CardAction.openUrl(session, 'http://thehivekennedytown.com.hk/', 'Book Now')
+        ]),
+
         new builder.HeroCard(session)
         .title('Maker Hive Kennedy Town')
         .subtitle('Makerspace')
