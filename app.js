@@ -320,7 +320,7 @@ function (session, results) {
         function (session, args, next) 
             {
 
-            builder.Prompts.text(session, 'Got it, can you describe what you are looking for or what are you working at? Its okay to talk to me like to a human');
+            builder.Prompts.text(session, 'Got it, can you describe what you are looking for or what are you working at? Its okay to talk to me like to a human!');
             },
             function (session, results, next) {
             var learner_des = results.response;
@@ -436,7 +436,7 @@ function (session, results) {
                 //end of sample request
             
             
-            builder.Prompts.text(session, 'Thanks! let me search on our platform!');
+            builder.Prompts.text(session, 'Thanks! I am searching on our platform...');
         },
          function (session, results,next) {
             var userid = session.message.address.user.id;
