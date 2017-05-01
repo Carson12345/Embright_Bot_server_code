@@ -320,7 +320,7 @@ function (session, results) {
         function (session, args, next) 
             {
 
-            builder.Prompts.text(session, 'Got it, can you describe what you are looking for or what are you working at? Its okay to talk to me like to a human!');
+            builder.Prompts.text(session, 'Can you describe what you are looking for or what are you working at? Its okay to talk like to a human and tell me as much as possible!');
             },
             function (session, results, next) {
             var learner_des = results.response;
