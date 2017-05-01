@@ -270,7 +270,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
     .matches('buy', [
 
     function (session, args, next) {
-            builder.Prompts.text(session, 'Please describe what you want to buy, or give me a picture of what you are looking for');
+            builder.Prompts.text(session, 'What you need to buy? or give me a picture of what you are looking for:)');
         },
         function (session, results, next) {
             var learner_des = results.response;
