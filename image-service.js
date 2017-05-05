@@ -5,8 +5,11 @@ const request = require('request').defaults({ encoding: null });
 
 const BING_API_URL = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search?modulesRequested=SimilarProducts&mkt=en-us&form=BCSPRD';
 
-const BING_SEARCH_API_KEY = 'ee4e28574f514ce7b687236b01a07432';
+
+const BING_SEARCH_API_KEY = 'e6f4256f03e34713bb3f9296954fe3cb';
+// const BING_SEARCH_API_KEY = 'ee4e28574f514ce7b687236b01a07432';
 // const BING_SEARCH_API_KEY = process.env.BING_SEARCH_API_KEY;
+
 
 /** 
  *  Gets the similar products of the image from an image stream
