@@ -36,8 +36,8 @@ server.listen(process.env.port || process.env.PORT || 3978, function () {
 
 // Create chat bot
 var connector = new builder.ChatConnector({
-    appId: "0e4ad4e8-25e1-44b1-bfa6-6d0cd029a5f8",
-    appPassword: "w5igphWF1rDqCuNjBgNxHWK"
+    appId: "469bcf4e-7852-4910-a2b7-3ece939377f5",
+    appPassword: "8vX5j4na9Lo0rD9m1Sqsk5y"
 });
 var bot = new builder.UniversalBot(connector);
 server.use(restify.bodyParser());
@@ -53,7 +53,7 @@ const textapikey = "ce6e99c7adf64cd196462ffb0646cd09";
 // This Url can be obtained by uploading or creating your model from the LUIS portal: https://www.luis.ai/
 
 
-const LuisModelUrl = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/317d5192-256e-44cc-b72d-e1b356c5dd94?subscription-key=62567d4d83e14ca9adac5c59e6b8095f&verbose=true&timezoneOffset=0.0&q=';
+const LuisModelUrl = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/ca2bb7a0-576b-4982-96cb-ba95f3c7759b?subscription-key=46ae75eb0b4844c9a8e5b77a6ac1e1ad&timezoneOffset=0&verbose=true&q=';
 
 
 // Main dialog with LUIS
@@ -67,7 +67,7 @@ bot.on('conversationUpdate', message => {
             if (identity.id === message.address.bot.id) {
                 const reply = new builder.Message()
                     .address(message.address)
-                    .text('Welcome back! Say Hi to activate Muse.');
+                    .text('Welcome back! How can I help you?');
                     
                 bot.send(reply);
                 console.log(message.address);
@@ -95,36 +95,7 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
-                // //sample request
-                // var myJSONObject = 
-                // {
-                //     "documents": [
-                //         {
-                //         "language": "en",
-                //         "id": "123345",
-                //         "text": session.message.text
-                //         }
-                //     ]
-                // };
-                // request({
-                //     url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
-                //     method: "POST",
-                //     headers: {
-                //     "content-type": "application/json",
-                //     "Ocp-Apim-Subscription-Key": "6951188cf7d44a57b8df9f7a630ce36a"
-                //     },
-                //     json: true,   // <--Very important!!!
-                //     body: myJSONObject
-                    
-                // }, 
-                // function(err, res, body) {
-                //     var myans = body["documents"][0]["keyPhrases"][0];
-                //     console.log(body["documents"]);
-                //     console.log(myans);
-                //     console.log(body["documents"][0]["keyPhrases"].length);
 
-                // });
-                // //end of sample request
 
                 
   }
@@ -180,270 +151,182 @@ bot.dialog('/', new builder.IntentDialog({ recognizers: [recognizer] })
     ])
 
 //Check updates resources
-    .matches('getevent', [
+    .matches('check1', [
         function (session, args, next) 
             {
                 var cards = eventcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('By studying your preferences, I think you will be interested in these events!')
+                    .text('😉 Sure! Consider the folowing:')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
+                session.send('😥😥 You are not on the right track! Try to spend less!'), session.message.text;
                 
-            // plans.LoadAllPlans(function (fetchedplan) {
-            //     var fetchedplan = fetchedplan; 
-            //     console.log(fetchedplan);
-            //     console.log(fetchedplan[0]['PlanTitle']);
-            //     console.log(fetchedplan[0]['PlanTitle']);
-            //     fetchedplan[0].score = "1";
-            //     console.log(fetchedplan);
-
-            // });
-        next();
-
-        },
-         function (session, args, next) {
-            builder.Prompts.text(session, 'I can also find events according to your requirements. Any specific event you want to find?');
-        },
-        function (session, results, next) {
-            var learner_des = results.response;
-            learner_des_ID = learner_des;
-            session.send('Got it! Please note that we will also record your search data for more accurate recommendation next time', session.message.text);
-            session.send('We have finished by setting up our ML studio web services, we are still working on the Post an event/a job module, this smart recommendation module leveraging Azure Machine Learning will soon be live!', session.message.text);
-        }        
+                
+        }
+  
 ])
 
 //Getjobs
-    .matches('getplace', [
+    .matches('risk', [
         function (session, args, next) 
-            {
-                var cards = spacecard(session);
+        {
+                session.send('Of course! 😉😉 Let me help you conduct a risk profiling.', session.message.text);
+                builder.Prompts.text(session, 'Would you like to set aside part of your net worth for investments? Please note that there is a potential for loss of your capital when investing in any investment products?');
+
+        },
+         function (session, args, next) {
+            builder.Prompts.text(session, 'How much of your income would you like to set aside for savings or investment in investment products? Please give me a percentage.');
+        },
+        function (session, results, next) {
+            var learner_des = results.response;
+            learner_des_ID = learner_des;
+            session.send('The anlyzed result is as follows:', session.message.text);
+            session.send('You are Type A Risk Averse ...', session.message.text);
+                var cards = optioncard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('Considering your current projects, I would suggest these events!')
+                    .text('You can choose the investment products that match your risk profile')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
                 
-            // plans.LoadAllPlans(function (fetchedplan) {
-            //     var fetchedplan = fetchedplan; 
-            //     console.log(fetchedplan);
-            //     console.log(fetchedplan[0]['PlanTitle']);
-            //     console.log(fetchedplan[0]['PlanTitle']);
-            //     fetchedplan[0].score = "1";
-            //     console.log(fetchedplan);
-
-            // });
-        next();
-
-        },
-         function (session, args, next) {
-            builder.Prompts.text(session, 'I can help you reserve a place according to your choice');
-        },
-        function (session, results, next) {
-            var learner_des = results.response;
-            learner_des_ID = learner_des;
-            session.send('Thanks, we will send you a confirmation email soon!', session.message.text);
         }        
 ])
 
-//Getjobs
-    .matches('findppl', [
-         function (session, args, next) {
-            builder.Prompts.text(session, 'Please describe what kind of creators you are interested in, thank you.');
-        },
-        function (session, results, next) {
-            var learner_des = results.response;
-            learner_des_ID = learner_des;
-                var cards = pplcard(session);
+
+//Check updates learn
+    .matches('check2', [
+
+    function (session, args, next) {
+            builder.Prompts.text(session, '😉 Congrats! You met your saving target this month!');
+            var cards = pplcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('Here are the creators on Embright that match your request')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
-        }        
+        },
+        function (session, results, next) {
+            var learner_des = results.response;
+            if (results.response == "See wealth growth") {
+
+                var cards = savingcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+
+            } else if (results.response == "Advice on reducing expenditure") {
+
+                var cards = breakcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+                var cards = jetsocard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .text('I have found out that you like to have Japanese food in Tsim Sha Tsui always, I suggest you to go to these restaurants that offer discounts to Hang Seng Bank users')
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+
+            } else if (results.response == "Advice on expanding income sources") {
+
+                var cards = incomecard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+
+            }
+            learner_des_ID = learner_des;
+            // session.send('Sure! I will monitor your expenditure and income and help you achieve your goal!'), session.message.text;
+
+
+    }
 ])
 
 //Check updates learn
-    .matches('buy', [
+.matches('checksad', [
 
     function (session, args, next) {
-            builder.Prompts.text(session, 'What you need to buy? or give me a picture of what you are looking for:)');
+            builder.Prompts.text(session, '😥😥 Oh..you does not meet your saving goal this month');
+            var cards = cantcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
         },
         function (session, results, next) {
             var learner_des = results.response;
-            learner_des_ID = learner_des;
-            next();
-        },
-        session => {
-    if (hasImageAttachment(session)) {
-        var stream = getImageStreamFromAttachment(session.message.attachments[0]);
-        imageService
-            .getSimilarProductsFromStream(stream)
-            .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
-            .catch(error => handleErrorResponse(session, error));
-    } else {
-        var imageUrl = parseAnchorTag(session.message.text) || (validUrl.isUri(session.message.text) ? session.message.text : null);
-        if (imageUrl) {
-            imageService
-                .getSimilarProductsFromUrl(imageUrl)
-                .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
-                .catch(error => handleErrorResponse(session, error));
-        } else {
-            var query = learner_des_ID;
-            imageService
-                .getSimilarProductsFromtext(query)
-                .then(value => handleApiResponse(session, value))
-                .catch(error => handleErrorResponse(session, error));
+            if (results.response == "See wealth growth") {
 
-        
-    }
-}
-builder.Prompts.text(session, 'These are the products I found!');
-}, 
-function (session, results) {
-            var learner_des = results.response;
+                var cards = savingcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+
+            } else if (results.response == "Advice on reducing expenditure") {
+
+                var cards = breakcard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+                var cards = jetsocard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .text('I have found out that you like to have Japanese food in Tsim Sha Tsui always, I suggest you to go to these restaurants that offer discounts to Hang Seng Bank users')
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+
+            } else if (results.response == "How can I increase income streams?") {
+
+                var cards = incomecard(session);
+                // attach the card to the reply message
+                var reply = new builder.Message(session)
+                    .attachmentLayout(builder.AttachmentLayout.carousel)
+                    .attachments(cards);
+                session.send(reply);
+
+            }
             learner_des_ID = learner_des;
-            session.send('Thank you! The product has been added to your order list.', session.message.text);
-        }
-        
+            
+
+
+    }
 ])
 
 
 
-
-
-
-.matches('findproj', [
+.matches('startsaving', [
         function (session, args, next) 
             {
 
-            builder.Prompts.text(session, 'Can you describe what you are looking for or what are you working at? Its okay to talk like to a human and tell me as much as possible!');
+            builder.Prompts.text(session, 'Got it! How much is your saving goal per month?');
             },
             function (session, results, next) {
             var learner_des = results.response;
             learner_des_ID = learner_des
-            //sample request
-                var myJSONObject = 
-                {
-                    "documents": [
-                        {
-                        "language": "en",
-                        "id": session.message.address.user.id,
-                        "text": learner_des_ID
-                        }
-                    ]
-                };
- 
-                request({
-                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
-                    method: "POST",
-                    headers: {
-                    "content-type": "application/json",
-                    "Ocp-Apim-Subscription-Key": textapikey
-                    },
-                    json: true,   // <--Very important!!!
-                    body: myJSONObject
-                    
-                }, 
-                function(err, res, body) {
-                    var keyword = body["documents"][0]["keyPhrases"];
-                    
-                    console.log(body["documents"]);
-                    console.log("Keywords: "+keyword);
-                    console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length); 
-                    //another request for the proj content
-                            plans.LoadAllPlans(function (fetchedplan) {
-                                console.log(fetchedplan);
-                                var arr = [];
-                                
-                                
-                            var counter = 0;
-                            for (var k in fetchedplan) {
-                                    
-                                    var k_score;
-                                    var index = fetchedplan.findIndex(x => x.PlanID==fetchedplan[k]['PlanID']);
-                                    console.log(index);
-                                    var Projdes = 
-                                    {
-                                        "documents": [
-                                            {
-                                            "language": "en",
-                                            "id": index,
-                                            "text": fetchedplan[k]['PlanDetails']
-                                            }
-                                        ]
-                                    };
-                                    request({
-                                    url: "https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases",
-                                    method: "POST",
-                                    headers: {
-                                    "content-type": "application/json",
-                                    "Ocp-Apim-Subscription-Key": textapikey
-                                    },
-                                    json: true,   // <--Very important!!!
-                                    body: Projdes
-                                    }, 
-                                    function(err, res, body) {
-
-                                        var keyword_proj = body["documents"][0]["keyPhrases"];
-                                        keyword = keyword.join(' ').split(' ');
-                                        keyword_proj = keyword_proj.join(' ').split(' ');
-                                        console.log(body["documents"]);
-                                        console.log("Keywords: "+keyword_proj);
-                                        console.log("Keywords length: "+body["documents"][0]["keyPhrases"].length); 
-                                        console.log("Set1: "+keyword);
-                                        console.log("Set2: "+keyword_proj);
-                                        var arr_req = Object.keys(keyword).map(function (key) { return keyword[key]; });
-                                        var arr_proj = Object.keys(keyword_proj).map(function (key) { return keyword_proj[key]; });
-                                        console.log("Score: " + intersect_arr(arr_req,arr_proj).length);
-                                        k_score = intersect_arr(arr_req,arr_proj).length;
-                                        // fetchedplan[k].mark = k_score;
-                                        // console.log(fetchedplan[k]);
-                                        var plankey = body["documents"][0]["id"];
-                                        arr.push({plankey,k_score});
-                                        
-                                        
-                                        
-                                        plans.LoadAllPlans(function (fetchedplan2) {
-                                            var byscore = arr.slice(0);
-                                            byscore.sort(function(a,b) {
-                                                return b.k_score - a.k_score;
-                                            });
-                                            console.log(byscore);
-                                            console.log(fetchedplan2.length);
-                                            var cards = new Array();
-                                            for (var l = 0; l < byscore.length; l++) {
-                                                cards.push(topic_card(fetchedplan,byscore[l]['plankey']));
-                                            }
-                                            counter = counter + 1;
-                                            if (counter == fetchedplan2.length) {
-                                            const reply = new builder.Message()
-                                                                        .address(session.message.address)
-                                                                        .text('These projects match what you just told me! (Arranged by relevance)')
-                                                                        .attachmentLayout(builder.AttachmentLayout.carousel)
-                                                                        .attachments(cards);
-                                            bot.send(reply);
-                                            }
-                                        });                             
-                                    });  
-                            }
-                        });
-                    
-                });
-                //end of sample request
             
-            
-            builder.Prompts.text(session, 'Thanks! I am searching on our platform...');
+            builder.Prompts.text(session, 'That is great!👍 May I know what are the main purposes of the saving?');
         },
          function (session, results,next) {
             var userid = session.message.address.user.id;
             var plan_chosen = results.response;
             plan_chosen_ID = plan_chosen;
-            plans.EnrollPlan(results.response , userid);
-            session.send('Got it! This project has been saved to your collection. Thank you!'), session.message.text;
+            session.send('Sure! I will monitor your expenditure and income and help you achieve your goal!'), session.message.text;
             //send data to database for learning - send plan title chosen, search request, plan id
          
          }
@@ -455,40 +338,10 @@ function (session, results) {
 
 
 
-
-
-
-
-
     .onDefault(
         
 
-//         session => {
-//     if (hasImageAttachment(session)) {
-//         var stream = getImageStreamFromAttachment(session.message.attachments[0]);
-//         imageService
-//             .getSimilarProductsFromStream(stream)
-//             .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
-//             .catch(error => handleErrorResponse(session, error));
-//     } else {
-//         var imageUrl = parseAnchorTag(session.message.text) || (validUrl.isUri(session.message.text) ? session.message.text : null);
-//         if (imageUrl) {
-//             imageService
-//                 .getSimilarProductsFromUrl(imageUrl)
-//                 .then(visuallySimilarProducts => handleApiResponse(session, visuallySimilarProducts))
-//                 .catch(error => handleErrorResponse(session, error));
-//         } else {
-//             var seaquery = session.message.text;
-//             imageService
-//                 .getSimilarProductsFromtext(seaquery)
-//                 .then(value => handleApiResponse(session, value))
-//                 .catch(error => handleErrorResponse(session, error));
 
-        
-//     }
-//     }
-// }
-         
         (session) => {
         try {
             console.log(session.message.attachments[0]['contentUrl']);
@@ -500,16 +353,14 @@ function (session, results) {
                 var cards = greetingcard(session);
                 // attach the card to the reply message
                 var reply = new builder.Message(session)
-                    .text('I understand but so far I can only provide the following functions. Sorry')
+                    .text('I understand but so far I can only provide the following functions. How can I help you?😉')
                     .attachmentLayout(builder.AttachmentLayout.carousel)
                     .attachments(cards);
                 session.send(reply);
         }
 
     })
-    
-    
-    );
+);
 
 if (process.env.IS_SPELL_CORRECTION_ENABLED === 'true') {
     bot.use({
@@ -614,111 +465,151 @@ function intersect_arr(a, b)
 
   return result;
 }
-//topic cards
-// function topic_create(topicobj,prop) {
-//     return new builder.HeroCard()
-//         .title(topicobj[prop].PlanTopic)
-//         //.images([new builder.CardImage().url()])
-//         .images([
-//             builder.CardImage.create(session, 'https://embrightweb.azurewebsites.net/public/' + topicobj[prop].PlanPicture)
-//         ])
-//         .buttons([
-//             new builder.CardAction.postBack()
-//                                     .title('Start with this')
-//                                     .type('imBack')
-//                                     .value(topicobj[prop].PlanTopic)
-//         ]);
-// }
 
 
 
-
-//jobcards
-function spacecard(session) {
+//pplcard
+function jetsocard(session) {
     return [ 
+        new builder.HeroCard(session)
+        .title('Genki Sushi')
+        .subtitle('The Mira Hong Kon, 118 Nathan Rd, Tsim Sha Tsui')
+        .text('25% off for Hang Seng Bank Credit Card')
+        .images([
+            builder.CardImage.create(session, 'https://s7.postimg.org/5ggrvu44r/genki-01.png')
+        ])
+        .buttons([
+            builder.CardAction.imBack(session, 'Details', 'Details')
+    
+        ])
+        ,
 
         new builder.HeroCard(session)
-        .title('Maker Faire Hong Kong 2017 x Make Big')
-        .subtitle('Maker Faire')
-        .text('"Maker Faire Hong Kong 2017 x Make Big" is a must-attend event for Hong Kong Makers. Together we hope to promote “Maker Culture” to the general public, demonstrating creativity, inventiveness and resourcefulness.')
+        .title('Sushi Shikon')
+        .subtitle('The Peninsula Hong Kong, 28/F Salisbury Rd, Tsim Sha Tsui ')
+        .text('15% off for Hang Seng Bank Credit Card')
         .images([
-            builder.CardImage.create(session, 'http://www.makerfairehongkong.com/2017/wp-content/themes/mfhk2017/images/mfhk_logo.svg')
+            builder.CardImage.create(session, 'https://www.hangseng.com/cms/emkt/pmo/grp04/p38/chi/images/logo/shikon.jpg')
         ])
+        // .buttons([
+        //     builder.CardAction.openUrl(session, 'http://www.ifva.com/?p=7620&lang=en', 'Apply Now')
+        // ])
         .buttons([
-            builder.CardAction.openUrl(session, 'http://www.makerfairehongkong.com/2017/about/', 'Book Now')
-        ]),
+            builder.CardAction.imBack(session, 'Details', 'Details')
+    
+        ])
+        ,
 
         new builder.HeroCard(session)
-        .title('HardUST')
-        .subtitle('Maker Hakathon')
-        .text('The best Maker Hackathon in Hong Kong. We take care of all the equipment and hardware.')
-        .images([
-            builder.CardImage.create(session, 'http://www.rs-online.com/designspark/rel-assets/ds-assets/uploads/images/5536235344a848b780697bb90ab544b911080312_523893821081893_2918231974055894422_o.jpg')
-        ])
+        .title('温野菜')
+        .subtitle('29+30F, 1 Peking Rd, Tsim Sha Tsui')
+        .text('20% off for Hang Seng Bank Credit Card')
         .buttons([
-            builder.CardAction.openUrl(session, 'http://hack.ust.hk/hard2017/', 'Book Now')
-        ]),
-        
-        new builder.HeroCard(session)
-        .title('Intro to Soldering: Acrylic LED Lamp')
-        .subtitle('Workshop')
-        .text('Ever been curious about how to solder electronic components? Join us for our Intro to Soldering Workshop......')
+            builder.CardAction.imBack(session, 'Details', 'Details')
+    
+        ])
         .images([
-            builder.CardImage.create(session, 'https://i.ytimg.com/vi/y0InEFdWfZc/maxresdefault.jpg')
+            builder.CardImage.create(session, 'https://www.hangseng.com/cms/emkt/pmo/grp04/p38/chi/images/logo/ony.jpg')
         ])
-        .buttons([
-            builder.CardAction.openUrl(session, 'http://thehivekennedytown.com.hk/', 'Book Now')
-        ]),   
-
-        new builder.HeroCard(session)
-        .title('Maker Hive Kennedy Town')
-        .subtitle('Makerspace')
-        .text('Space Available at period 12 May to 25 May')
-        .images([
-            builder.CardImage.create(session, 'http://makerhive.com.hk/wp-content/uploads/2015/05/makerhive_homepage_1.jpg')
-        ])
-        .buttons([
-            builder.CardAction.openUrl(session, 'https://emotio.typeform.com/to/D8gu3n', 'Book Now')
-        ]),
-
-        new builder.HeroCard(session)
-        .title('Maker Bay Hong Kong')
-        .subtitle('Makerspace')
-        .text('Space Available at period 22 April to 30 April')
-        .images([
-            builder.CardImage.create(session, 'https://coconuts.co/public/public/inline/images/makeybay.jpg?itok=8lVXxASR')
-        ])
-        .buttons([
-            builder.CardAction.openUrl(session, 'https://www.makerbay.org/', 'Book Now')
-        ])
+        // .buttons([
+        //     builder.CardAction.openUrl(session, 'http://www.ifva.com/?p=7620&lang=en', 'Apply Now')
+        // ])
     ]
 }
-
 
 //pplcard
 function pplcard(session) {
     return [ 
         new builder.HeroCard(session)
-        .title('Russell Durant')
-        .subtitle('Northwood, United Kingdom')
-        .text('Cosplayer and engineer. Not working on commissions at this time, unless you are a game developer. And your name is Hideo Kojima. ')
+        .title('Net change in account balance: $2325.7 ')
+        .subtitle('You saved $2325.7 this month!')
+        .text('Congrats! You met the saving target for this month and saved $2325.7! Click the following button to see the growth history and the projected growth trend!')
         .images([
-            builder.CardImage.create(session, 'http://icon-icons.com/icons2/884/PNG/512/person_4_icon-icons.com_68900.png')
+            builder.CardImage.create(session, 'https://s11.postimg.org/ofc1bi7o3/goal-01.png')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'https://emotio.typeform.com/to/D8gu3n', 'Browse Projects')
-        ]),
+            builder.CardAction.imBack(session, 'See wealth growth', 'See wealth growth')
+    
+        ])
+        ,
 
         new builder.HeroCard(session)
-        .title('Arika Ho')
-        .subtitle('New York, NY, USA')
-        .text('Founder of Lanacrafts Hong Kong. Happy to share my projects and techniques with other makers')
+        .title('Your Total Expenditure this month: ')
+        .subtitle('This report is based on the data collectedfrom 22/5 - 26/5')
+        .text('Click "Expenditure breakdown" to see what did you spend your money on this month!')
         .images([
-            builder.CardImage.create(session, 'http://icon-icons.com/icons2/884/PNG/512/person_9_icon-icons.com_68901.png')
+            builder.CardImage.create(session, 'https://s4.postimg.org/tidfqpfy5/pay-01.png')
         ])
+        // .buttons([
+        //     builder.CardAction.openUrl(session, 'http://www.ifva.com/?p=7620&lang=en', 'Apply Now')
+        // ])
         .buttons([
-            builder.CardAction.openUrl(session, 'https://my.hirehive.io/1r/jobs/27357/digital-art-director-new-york', 'Browse Projects')
-        ])   
+            builder.CardAction.imBack(session, 'Advice on reducing expenditure', 'Advice on reducing expenditure')
+    
+        ])
+        ,
+
+        new builder.HeroCard(session)
+        .title('Your Total Income this month: ')
+        .subtitle('This report is based on the data collectedfrom 22/5 - 26/5')
+        .text('Click "Income breakdown" to see what did you spend your money on this month!')
+        .buttons([
+            builder.CardAction.imBack(session, 'Advice on expanding income sources', 'Advice on expanding income sources')
+    
+        ])
+        .images([
+            builder.CardImage.create(session, 'https://s29.postimg.org/6s0r7rd6v/save-01.png')
+        ])
+        // .buttons([
+        //     builder.CardAction.openUrl(session, 'http://www.ifva.com/?p=7620&lang=en', 'Apply Now')
+        // ])
+    ]
+}
+
+//cant save card
+function cantcard(session) {
+    return [ 
+        new builder.ThumbnailCard(session)
+        .title('Net change in account balance: ')
+        .subtitle('Your account loses $500 this month!')
+        .text('I found out that you are having rather high expenditure this month! I would suggest you to check out the wealth management from HKMA. If you need to borrow money for emergency, please click out the loans info below')
+        // // .images([
+        // //     builder.CardImage.create(session, 'https://ga-shop-production-herokuapp-com.global.ssl.fastly.net/assets/images/logo_1200_by_627_1QIVL.jpg')
+        // // ])
+        .buttons([
+            builder.CardAction.imBack(session, 'See wealth growth', 'See wealth growth')
+        ,
+            builder.CardAction.openUrl(session, './chart.html', 'Saving Advice from HKMA')
+        ,
+            builder.CardAction.openUrl(session, 'https://bank.hangseng.com/1/2/chi/personal/loans/instalment-loan?&cid=personal-loans:ploan2017:sem:googlesem:runofsite&mkwid=soZGazmvZ_187333725767_%252Bhang%2520%252Bseng%2520%252Bloan_b_c', 'Hang Seng Personal Loan/Credit Card Loan')
+        ])
+        ,
+
+        new builder.HeroCard(session)
+        .title('Your Total Expenditure this month: ')
+        .subtitle('This report is based on the data collectedfrom 22/5 - 26/5')
+        .text('Click "Expenditure breakdown" to see what did you spend your money on this month!')
+        // .images([
+        //     builder.CardImage.create(session, 'https://camo.githubusercontent.com/22c2fafa60804cb2bc3f60ff8afe6d5262da3b25/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f7a654d6972636f2f6769746875622f73776966742d6c696e6563686172742f30312e706e67')
+        // ])
+        // .buttons([
+        //     builder.CardAction.openUrl(session, 'http://www.ifva.com/?p=7620&lang=en', 'Apply Now')
+        // ])
+        .buttons([
+            builder.CardAction.imBack(session, 'Advice on reducing expenditure', 'Advice on reducing expenditure')
+    
+        ])
+        ,
+
+        new builder.HeroCard(session)
+        .title('Your Total Income this month: ')
+        .subtitle('This report is based on the data collectedfrom 22/5 - 26/5')
+        .text('Click "Income breakdown" to see what did you spend your money on this month!')
+        .buttons([
+            builder.CardAction.imBack(session, 'Advice on expanding income sources', 'Advice on expanding income sources')
+    
+        ])
+
     ]
 }
 
@@ -726,49 +617,38 @@ function pplcard(session) {
 function greetingcard(session) {
     return [
         new builder.HeroCard(session)
-        .title('Find Projects')
-        .subtitle('Explore projects that match your requirements to take reference on and learn')
+        .title('Most updated saving advice 💡 ')
+        .subtitle('Check out if you are spending at the right pattern!')
         // .images([
         //     builder.CardImage.create(session, 'https://s13.postimg.org/4dpbpu87r/icons_proj3-01.jpg')
         // ])
         .buttons([
-            builder.CardAction.imBack(session, 'find projects', 'Find')
+            builder.CardAction.imBack(session, 'Am I on the right track?', 'Am I on the right track?')
     
         ])
         ,
 
         new builder.HeroCard(session)
-        .title('Find and Buy Equipment/Materials')
-        .subtitle('Tell me what equipment or material you need or send me a picture of it, I will find it for you and help you order them online')
+        .title('Check latest monthly report 📊 ')
+        .subtitle('Set new saving goal or edit current goal')
         // .images([
         //     builder.CardImage.create(session, 'https://s16.postimg.org/sunkeafhx/icons_findppl-01.jpg')
         // ])
         .buttons([
-            builder.CardAction.imBack(session, 'buy', 'Find and Buy')
+            builder.CardAction.imBack(session, 'Check monthly report', 'Check monthly report')
         
-        ])
-        ,
+        ]),
 
         new builder.HeroCard(session)
-        .title('Find Maker Event/Workshop')
-        .subtitle('I can recommend some Makers events that suits you!')
+        .title('Set Saving Goal 💲')
+        .subtitle('Set new saving goal or edit current goal')
         // .images([
-        //     builder.CardImage.create(session, 'https://s2.postimg.org/v02k6gzvt/icons_findjob-01.jpg')
+        //     builder.CardImage.create(session, 'https://s16.postimg.org/sunkeafhx/icons_findppl-01.jpg')
         // ])
         .buttons([
-            builder.CardAction.imBack(session, 'Find Makerspace/Events', 'Find Makerspace/Events')
+            builder.CardAction.imBack(session, 'Edit saving goal', 'Edit saving goal')
         
         ])
-        ,
-
-        new builder.HeroCard(session)
-        .title('Get technical term definition')
-        .subtitle('Facing jargons or technical terms you never seen? I can tell you what it is! Just ask me!')
-        // .images([
-        //     builder.CardImage.create(session, 'https://s2.postimg.org/v02k6gzvt/icons_findjob-01.jpg')
-        // ])
-
-        
         
 
 
@@ -779,120 +659,151 @@ function greetingcard(session) {
 function eventcard(session) {
     return [ 
         new builder.HeroCard(session)
-        .title('Free Course: Visual Design and Motion Graphics')
-        .subtitle('Application Deadline: 26/4/2017')
-        .text('The last 3 free course of General Assembly Hong Kong, this one is especially designers and directors to be to learn about the concepts in visual design, which will help you to develop in many field......')
+        .title('Predicted Month-end Net Balance: +$570 ')
+        .subtitle('The latest estimate of net change in your bank balance at the end of this month')
+        .text('Hi there! The predicted net change is +$570, which is lower than your saving target! you better spend less in the rest of the days this month!')
         .images([
-            builder.CardImage.create(session, 'https://ga-shop-production-herokuapp-com.global.ssl.fastly.net/assets/images/logo_1200_by_627_1QIVL.jpg')
+            builder.CardImage.create(session, 'https://s29.postimg.org/cmv6gldl3/trend-01.png')
         ])
         .buttons([
-            builder.CardAction.openUrl(session, 'https://generalassemb.ly/education/visual-design', 'Apply Now')
+            builder.CardAction.imBack(session, 'Show me the prediction graph', 'See prediction graph')
+    
+        ])
+        ,
+
+        new builder.HeroCard(session)
+        .title('Your Expense this week: $930 ')
+        .subtitle('This report is based on the data collectedfrom 22/5 - 26/5')
+        .text('Week-over-Week Expense growth: +3.21% ')
+        .images([
+            builder.CardImage.create(session, 'https://s4.postimg.org/tidfqpfy5/pay-01.png')
+        ])
+
+        .buttons([
+            builder.CardAction.imBack(session, 'Show me the expense graph', 'See graph')
+    
+        ])
+        ,
+
+        new builder.HeroCard(session)
+        .title('Your Income this week: $50')
+        .subtitle('This report is based on the data collectedfrom 22/5 - 26/5')
+        .text('Week-over-Week Income growth: -0.37%')
+        .buttons([
+            builder.CardAction.imBack(session, 'Show me the income graph', 'See graph')
+    
+        ])
+        .images([
+            builder.CardImage.create(session, 'https://s29.postimg.org/6s0r7rd6v/save-01.png')
+        ])
+
+    ]
+}
+
+
+//investment update
+
+function investcard(session) {
+    return [ 
+        new builder.HeroCard(session)
+        .title('The amount of money that can be used to invest')
+        .subtitle('We analysed your expenditure pattern')
+        .text('We analysed your expenditure pattern, we found out that actually you have around $10,000 unused funds in your account. If you would like to explore available investment options, please click to start a risk assessment.')
+        .buttons([
+            builder.CardAction.imBack(session, 'Start Risk Assessment', 'Start Risk Assessment')
+        ])
+
+    ]
+}
+
+//investment options
+
+function optioncard(session) {
+    return [ 
+        new builder.HeroCard(session)
+        .title('Stock')
+        .subtitle('Stock Investment is suitable for people with score > X in the risk assessment')
+        .text('Stock Investment is suitable for people with score > X in the risk assessment')
+        .buttons([
+            builder.CardAction.imBack(session, 'Place order - Stocks', 'Place order')
+        ]),
+
+
+        new builder.HeroCard(session)
+        .title('Bond')
+        .subtitle('Bond Investment is suitable for people with score > X in the risk assessment')
+        .text('Bond Investment is suitable for people with score > X in the risk assessment')
+        .buttons([
+            builder.CardAction.imBack(session, 'Place order - Bonds', 'Place order')
         ]),
 
         new builder.HeroCard(session)
-        .title('The 21st ifva Awards')
-        .subtitle('Deadline: 7/4/2017')
-        .text('To discover and nurture the next currents for local creative industry of moving images....')
-        .images([
-            builder.CardImage.create(session, 'http://www.ifva.com/wp-content/uploads/21st_webbanner.jpg')
-        ])
+        .title('Time Deposit')
+        .subtitle('Time Deposit Investment is suitable for people with score > X in the risk assessment')
+        .text('Time Deposit Investment is suitable for people with score > X in the risk assessment')
         .buttons([
-            builder.CardAction.openUrl(session, 'http://www.ifva.com/?p=7620&lang=en', 'Apply Now')
-        ])   
+            builder.CardAction.imBack(session, 'Place order - Time Deposits', 'Place order')
+        ])
+
+        ,
+        new builder.HeroCard(session)
+        .title('Funds')
+        .subtitle('Funds Investment is suitable for people with score > X in the risk assessment')
+        .text('Funds Investment is suitable for people with score > X in the risk assessment')
+        .buttons([
+            builder.CardAction.imBack(session, 'Place order - Funds', 'Place order')
+        ])
+
+    ]
+}
+
+//expenditure update
+
+function savingcard(session) {
+    return [ 
+        new builder.HeroCard(session)
+        .title('Wealth growth trend')
+        .subtitle('You did a great job!')
+        .text('Above is how much your wealth have growth in the past one year')
+    
+        // // .images([
+        // //     builder.CardImage.create(session, 'https://ga-shop-production-herokuapp-com.global.ssl.fastly.net/assets/images/logo_1200_by_627_1QIVL.jpg')
+        // // ])
+    ]
+}
+//expenditure update
+
+function breakcard(session) {
+    return [ 
+        new builder.HeroCard(session)
+        .title('Expenditure Breakdown')
+        .subtitle('Above is how much you have spent in each category')
+        .text('Below how much you have spent in each category')
+        .images([
+            builder.CardImage.create(session, 'https://s12.postimg.org/hsk8ackgt/piechart.png')
+        ])
+    ]
+}
+
+//income update
+
+function incomecard(session) {
+    return [ 
+        new builder.HeroCard(session)
+        .title('Income Breakdown')
+        .subtitle('You can spend some of your money in the account on investment')
+        .text('I have identified that there are around $10,000 unused funds. If you want to expand our income sources, I can give you information of the available options!')
+        .buttons([
+            builder.CardAction.imBack(session, 'How can I increase income streams?', 'How can I increase income streams?')
+        ])
+        .images([
+            builder.CardImage.create(session, 'https://s16.postimg.org/3lv8taixh/Untitled-3-01.png')
+        ])
     ]
 }
 
 
 
-//=========================================================
-// Utilities
-//=========================================================
 
-const hasImageAttachment = session => {
-    return session.message.attachments.length > 0 &&
-        session.message.attachments[0].contentType.indexOf('image') !== -1;
-};
-const getImageStreamFromAttachment = attachment => {
-    var headers = {};
-    if (isSkypeAttachment(attachment)) {
-        // The Skype attachment URLs are secured by JwtToken,
-        // you should set the JwtToken of your bot as the authorization header for the GET request your bot initiates to fetch the image.
-        // https://github.com/Microsoft/BotBuilder/issues/662
-        connector.getAccessToken((error, token) => {
-            var tok = token;
-            headers['Authorization'] = 'Bearer ' + token;
-            headers['Content-Type'] = 'application/octet-stream';
 
-            return request.get({ url: attachment.contentUrl, headers: headers });
-        });
-    }
 
-    headers['Content-Type'] = attachment.contentType;
-    return request.get({ url: attachment.contentUrl, headers: headers });
-};
-
-const isSkypeAttachment = attachment => {
-    if (url.parse(attachment.contentUrl).hostname.substr(-'skype.com'.length) === 'skype.com') {
-        return true;
-    }
-
-    return false;
-};
-
-/**
- * Gets the href value in an anchor element.
- * Skype transforms raw urls to html. Here we extract the href value from the url
- * @param {string} input Anchor Tag
- * @return {string} Url matched or null
- */
-const parseAnchorTag = input => {
-    var match = input.match("^<a href=\"([^\"]*)\">[^<]*</a>$");
-    if (match && match[1]) {
-        return match[1];
-    }
-
-    return null;
-};
-
-//=========================================================
-// Response Handling
-//=========================================================
-
-const handleApiResponse = (session, images) => {
-    if (images && images.constructor === Array && images.length > 0) {
-
-        var productCount = Math.min(MAX_CARD_COUNT, images.length);
-
-        var cards = new Array();
-        for (var i = 0; i < productCount; i++) {
-            cards.push(constructCard(session, images[i]));
-        }
-
-        // create reply with Carousel AttachmentLayout
-        var reply = new builder.Message(session)
-            // .text('Here are some products I found')
-            .attachmentLayout(builder.AttachmentLayout.carousel)
-            .attachments(cards);
-        session.send(reply);
-    } else {
-        session.send('Couldn\'t find similar products :( ');
-    }
-};
-
-const constructCard = (session, image) => {
-    return new builder.HeroCard(session)
-        .title(image.name)
-        .subtitle("Price: USD " + Math.floor((Math.random() * 100) + 600)/100 + " || " + Math.floor((Math.random() * 132230) + 623400) + " People have bought this" )
-        .images([
-            builder.CardImage.create(session, image.thumbnailUrl)
-        ])
-        .buttons([
-            builder.CardAction.postBack(session, image.hostPageUrl,'Add to order list'),
-            builder.CardAction.openUrl(session, image.hostPageUrl, 'Buy now')
-        ]);
-};
-
-const handleErrorResponse = (session, error) => {
-    session.send('Oops! Something went wrong. Try again later.');
-    console.error(error);
-};
