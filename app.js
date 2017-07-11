@@ -56,7 +56,7 @@ const textapikey = "ce6e99c7adf64cd196462ffb0646cd09";
 const LuisModelUrl = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/ca2bb7a0-576b-4982-96cb-ba95f3c7759b?subscription-key=46ae75eb0b4844c9a8e5b77a6ac1e1ad&timezoneOffset=0&verbose=true&q=';
 
 
-// Main dialog with LUIS
+// dialog with LUIS
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 
 
